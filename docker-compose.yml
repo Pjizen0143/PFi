@@ -1,14 +1,53 @@
 name: pfi
 
+x-common-environment: &common-environment
+  ENVIRONMENT: ${ENVIRONMENT:-local}
+
+x-postgres-env-file: &postgres-env-file
+  - infra/postgres/.env.${ENVIRONMENT:-local}
+
+x-api-env-files: &api-env-files
+  - apps/api/.env.${ENVIRONMENT:-local}
+
+x-web-env-files: &web-env-files
+  - apps/web/.env.${ENVIRONMENT:-local}
+
 services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    env_file: *postgres-env-file
+    expose:
+      - "5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - backend
+
   api:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
     image: pfi-api:latest
-    container_name: pfi-api
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: *api-env-files
     environment:
+      <<: *common-environment
       PYTHONDONTWRITEBYTECODE: "1"
       PYTHONUNBUFFERED: "1"
     expose:
@@ -19,7 +58,7 @@ services:
           "CMD",
           "python",
           "-c",
-          "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/').status == 200 else 1)",
+          "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health').status == 200 else 1)",
         ]
       interval: 30s
       timeout: 5s
@@ -38,16 +77,16 @@ services:
       dockerfile: Dockerfile
       target: runner
     image: pfi-web:latest
-    container_name: pfi-web
     restart: unless-stopped
     depends_on:
       api:
         condition: service_healthy
+    env_file: *web-env-files
     environment:
-      NODE_ENV: production
+      <<: *common-environment
       PORT: "3000"
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     healthcheck:
       test:
         [
@@ -70,3 +109,6 @@ services:
 networks:
   backend:
     driver: bridge
+
+volumes:
+  postgres_data:

@@ -219,3 +219,6 @@ __marimo__/
 
 
 .vscode/
+
+.env.local*
+.env.production*
