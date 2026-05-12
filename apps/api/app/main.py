@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.api.health import router as health_router
 from app.core.db import create_db_and_tables
+from app import models
 
 
 async def lifespan(app: FastAPI):
