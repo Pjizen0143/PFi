@@ -53,7 +53,9 @@ def list_users(uow: UnitOfWork = Depends(get_uow)) -> list[UserResponse]:
     return [UserResponse.from_user(u) for u in users]
 
 
-@router.patch("/{user_id}", response_model=UserResponse, response_model_exclude_none=True)
+@router.patch(
+    "/{user_id}", response_model=UserResponse, response_model_exclude_none=True
+)
 def update_user(
     user_id: UUID,
     request: UpdateUserRequest,
