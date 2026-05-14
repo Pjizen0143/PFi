@@ -1,3 +1,4 @@
+from re import S
 from typing import Never
 from uuid import UUID
 
@@ -22,7 +23,10 @@ def _raise_http_for_value_error(exc: ValueError) -> Never:
 
 
 @router.post(
-    "", response_model=ApiResponse[UserResponse], response_model_exclude_none=True
+    "",
+    response_model=ApiResponse[UserResponse],
+    response_model_exclude_none=True,
+    status_code=status.HTTP_201_CREATED,
 )
 def create_user(
     request: CreateUserRequest,
@@ -80,7 +84,11 @@ def update_user(
     return ApiResponse.success_response[UserResponse.from_user(user)]
 
 
-@router.delete("/{user_id}", response_model_exclude_none=True)
+@router.delete(
+    "/{user_id}",
+    response_model_exclude_none=True,
+    status_code=status.HTTP_204_NO_CONTENT,
+)
 def delete_user(
     user_id: UUID,
     uow: UnitOfWork = Depends(get_uow),

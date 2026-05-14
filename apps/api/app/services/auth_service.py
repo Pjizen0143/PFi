@@ -15,6 +15,11 @@ from app.schemas.v1.auth import (
 from app.unit_of_work.unit_of_work import (
     UnitOfWork,
 )
+from app.exceptions.auth_exception import InvalidCredentialsException
+from app.exceptions.user_exception import (
+    UserNotFoundException,
+    EmailAlreadyExistsException,
+)
 
 
 class AuthService:
@@ -33,9 +38,7 @@ class AuthService:
         )
 
         if existing_user:
-            raise ValueError(
-                "Email already exists",
-            )
+            raise EmailAlreadyExistsException()
 
         user = User(
             display_name=request.display_name,
@@ -82,34 +85,18 @@ class AuthService:
             request.email,
         )
 
-        if not auth_provider:
-            raise ValueError(
-                "Invalid credentials",
-            )
+        if not auth_provider or not auth_provider.password_hash:
+            raise InvalidCredentialsException()
 
-        if not auth_provider.password_hash:
-            raise ValueError(
-                "Invalid credentials",
-            )
-
-        is_valid = verify_password(
-            request.password,
-            auth_provider.password_hash,
-        )
-
-        if not is_valid:
-            raise ValueError(
-                "Invalid credentials",
-            )
+        if not verify_password(request.password, auth_provider.password_hash):
+            raise InvalidCredentialsException()
 
         user = self.uow.users.get_by_id(
             auth_provider.user_id,
         )
 
         if not user:
-            raise ValueError(
-                "User not found",
-            )
+            raise UserNotFoundException()
 
         access_token = create_access_token(
             str(user.id),

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 
 from app.api.deps import get_uow
 from app.schemas.common.response import ApiResponse
@@ -20,6 +20,7 @@ router = APIRouter(
     "/register",
     response_model_exclude_none=True,
     response_model=ApiResponse[AuthResponse],
+    status_code=status.HTTP_201_CREATED,
 )
 def register(
     request: RegisterRequest,
