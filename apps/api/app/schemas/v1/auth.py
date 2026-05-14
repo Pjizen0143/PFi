@@ -1,4 +1,7 @@
 from pydantic import BaseModel, EmailStr
+from app.core.config import settings
+
+EXPIRE_TIME = settings.EXPIRE_TIME
 
 
 class RegisterRequest(BaseModel):
@@ -12,15 +15,9 @@ class LoginRequest(BaseModel):
     password: str
 
 
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-
-
 class AuthResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+    expires_in: int = EXPIRE_TIME
 
-    user_id: str
-    email: EmailStr
     display_name: str
