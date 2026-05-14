@@ -46,7 +46,7 @@ class PaginationMeta(BaseSchema):
     has_next: bool
 
 
-class ApiResponse[T](BaseSchema, Generic[T]):
+class ApiResponse[T](BaseSchema):
     """
     Generic API response model.
     """
@@ -61,7 +61,7 @@ class ApiResponse[T](BaseSchema, Generic[T]):
     @classmethod
     def success_response(
         cls,
-        message: str,
+        message: str | None = "Request completed",
         data: T | None = None,
         meta: PaginationMeta | None = None,
     ) -> "ApiResponse[T]":
@@ -75,8 +75,8 @@ class ApiResponse[T](BaseSchema, Generic[T]):
     @classmethod
     def error_response(
         cls,
-        message: str,
         code: str,
+        message: str | None = "Request failed",
         details: dict[str, Any] | None = None,
     ) -> "ApiResponse[None]":
         return cls(

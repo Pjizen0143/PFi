@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.api.deps import get_uow
 from app.schemas.v1.user import CreateUserRequest, UpdateUserRequest, UserResponse
+from app.schemas.common.response import ApiResponse
 from app.services.user_service import UserService
 from app.unit_of_work.unit_of_work import UnitOfWork
 
@@ -20,63 +21,73 @@ def _raise_http_for_value_error(exc: ValueError) -> Never:
     raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=msg) from exc
 
 
-@router.post("", response_model=UserResponse, response_model_exclude_none=True)
+@router.post(
+    "", response_model=ApiResponse[UserResponse], response_model_exclude_none=True
+)
 def create_user(
     request: CreateUserRequest,
     uow: UnitOfWork = Depends(get_uow),
-) -> UserResponse:
+) -> ApiResponse[UserResponse]:
     service = UserService(uow)
     try:
         user = service.create_user(request)
     except ValueError as exc:
         _raise_http_for_value_error(exc)
-    return UserResponse.from_user(user)
+    return ApiResponse.success_response(data=UserResponse.from_user(user))
 
 
-@router.get("/{user_id}", response_model=UserResponse, response_model_exclude_none=True)
+@router.get(
+    "/{user_id}",
+    response_model=ApiResponse[UserResponse],
+    response_model_exclude_none=True,
+)
 def get_user(
     user_id: UUID,
     uow: UnitOfWork = Depends(get_uow),
-) -> UserResponse:
+) -> ApiResponse[UserResponse]:
     service = UserService(uow)
     try:
         user = service.get_user(user_id)
     except ValueError as exc:
         _raise_http_for_value_error(exc)
-    return UserResponse.from_user(user)
+    return ApiResponse.success_response(data=UserResponse.from_user(user))
 
 
-@router.get("", response_model=list[UserResponse], response_model_exclude_none=True)
-def list_users(uow: UnitOfWork = Depends(get_uow)) -> list[UserResponse]:
+@router.get(
+    "", response_model=ApiResponse[list[UserResponse]], response_model_exclude_none=True
+)
+def list_users(uow: UnitOfWork = Depends(get_uow)) -> ApiResponse[list[UserResponse]]:
     service = UserService(uow)
     users = service.list_users()
-    return [UserResponse.from_user(u) for u in users]
+    return ApiResponse.success_response(data=[UserResponse.from_user(u) for u in users])
 
 
 @router.patch(
-    "/{user_id}", response_model=UserResponse, response_model_exclude_none=True
+    "/{user_id}",
+    response_model=ApiResponse[UserResponse],
+    response_model_exclude_none=True,
 )
 def update_user(
     user_id: UUID,
     request: UpdateUserRequest,
     uow: UnitOfWork = Depends(get_uow),
-) -> UserResponse:
+) -> ApiResponse[UserResponse]:
     service = UserService(uow)
     try:
         user = service.update_user(user_id, request)
     except ValueError as exc:
         _raise_http_for_value_error(exc)
-    return UserResponse.from_user(user)
+    return ApiResponse.success_response[UserResponse.from_user(user)]
 
 
 @router.delete("/{user_id}", response_model_exclude_none=True)
 def delete_user(
     user_id: UUID,
     uow: UnitOfWork = Depends(get_uow),
-) -> dict[str, str]:
+):
     service = UserService(uow)
     try:
         service.delete_user(user_id)
     except ValueError as exc:
         _raise_http_for_value_error(exc)
-    return {"message": "User deleted"}
+    return
