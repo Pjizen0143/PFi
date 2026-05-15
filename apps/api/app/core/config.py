@@ -18,6 +18,10 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str
 
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    EXPIRE_TIME: int
+
 
 @lru_cache
 def get_settings() -> Settings:
