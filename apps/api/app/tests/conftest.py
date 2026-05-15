@@ -19,13 +19,13 @@ async def db_engine():
     
     # Create all tables based on your models
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(SQLModel.metadata.create_all)
     
     yield engine
     
     # Cleanup: drop all tables after tests
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(SQLModel.metadata.drop_all)
     
     await engine.dispose()
 
