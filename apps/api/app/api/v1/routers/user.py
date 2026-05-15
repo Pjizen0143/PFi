@@ -1,101 +1,54 @@
-from re import S
-from typing import Never
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
-from app.api.deps import get_uow
-from app.schemas.v1.user import CreateUserRequest, UpdateUserRequest, UserResponse
+from app.api.deps import get_current_user, get_uow
+from app.schemas.v1.user import UpdateUserRequest, UserResponse
 from app.schemas.common.response import ApiResponse
 from app.services.user_service import UserService
 from app.unit_of_work.unit_of_work import UnitOfWork
+from app.models.user import User
+
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-def _raise_http_for_value_error(exc: ValueError) -> Never:
-    msg = str(exc)
-    if msg == "Email already exists":
-        raise HTTPException(status.HTTP_409_CONFLICT, detail=msg) from exc
-    if msg == "User not found":
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=msg) from exc
-    raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=msg) from exc
-
-
-@router.post(
-    "",
-    response_model=ApiResponse[UserResponse],
-    response_model_exclude_none=True,
-    status_code=status.HTTP_201_CREATED,
-)
-def create_user(
-    request: CreateUserRequest,
-    uow: UnitOfWork = Depends(get_uow),
-) -> ApiResponse[UserResponse]:
-    service = UserService(uow)
-    try:
-        user = service.create_user(request)
-    except ValueError as exc:
-        _raise_http_for_value_error(exc)
-    return ApiResponse.success_response(data=UserResponse.from_user(user))
-
-
 @router.get(
-    "/{user_id}",
+    "/me}",
     response_model=ApiResponse[UserResponse],
     response_model_exclude_none=True,
 )
 def get_user(
-    user_id: UUID,
-    uow: UnitOfWork = Depends(get_uow),
+    currenent_user: User = get_current_user(),
 ) -> ApiResponse[UserResponse]:
-    service = UserService(uow)
-    try:
-        user = service.get_user(user_id)
-    except ValueError as exc:
-        _raise_http_for_value_error(exc)
-    return ApiResponse.success_response(data=UserResponse.from_user(user))
-
-
-@router.get(
-    "", response_model=ApiResponse[list[UserResponse]], response_model_exclude_none=True
-)
-def list_users(uow: UnitOfWork = Depends(get_uow)) -> ApiResponse[list[UserResponse]]:
-    service = UserService(uow)
-    users = service.list_users()
-    return ApiResponse.success_response(data=[UserResponse.from_user(u) for u in users])
+    return ApiResponse.success_response(data=UserResponse.from_user(currenent_user))
 
 
 @router.patch(
-    "/{user_id}",
+    "/me",
     response_model=ApiResponse[UserResponse],
     response_model_exclude_none=True,
 )
 def update_user(
-    user_id: UUID,
     request: UpdateUserRequest,
+    currenent_user: User = get_current_user(),
     uow: UnitOfWork = Depends(get_uow),
 ) -> ApiResponse[UserResponse]:
     service = UserService(uow)
-    try:
-        user = service.update_user(user_id, request)
-    except ValueError as exc:
-        _raise_http_for_value_error(exc)
+    user = service.update_user(currenent_user.id, request)
     return ApiResponse.success_response[UserResponse.from_user(user)]
 
 
 @router.delete(
-    "/{user_id}",
+    "/me}",
     response_model_exclude_none=True,
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_user(
     user_id: UUID,
     uow: UnitOfWork = Depends(get_uow),
+    currenent_user: User = get_current_user(),
 ):
     service = UserService(uow)
-    try:
-        service.delete_user(user_id)
-    except ValueError as exc:
-        _raise_http_for_value_error(exc)
+    service.delete_user(currenent_user.id)
     return
