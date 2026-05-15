@@ -1,7 +1,8 @@
-from fastapi import HTTPException, FastAPI, Request
+from typing import Any
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from starlette import status
-from typing import Any
 
 from app.schemas.common.response import ApiResponse
 
@@ -16,14 +17,17 @@ class AppException(HTTPException):
         *,
         details: dict[str, Any] | None = None,
         message: str | None = None,
+        headers: dict[str, str] | None = None,
     ) -> None:
-        self.details = details
-
         final_message = message or self.message
+
+        self.message = final_message
+        self.details = details
 
         super().__init__(
             status_code=self.status_code,
             detail=final_message,
+            headers=headers,
         )
 
 
@@ -40,6 +44,7 @@ async def app_exception_handler(
     return JSONResponse(
         status_code=exc.status_code,
         content=response.model_dump(),
+        headers=exc.headers,
     )
 
 
