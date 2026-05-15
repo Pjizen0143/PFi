@@ -5,7 +5,6 @@ from app.models.user import User
 from app.schemas.v1.user import CreateUserRequest, UpdateUserRequest
 from app.unit_of_work.unit_of_work import UnitOfWork
 from app.exceptions.user_exception import (
-    EmptyDisplayName,
     UserNotFoundException,
     EmailAlreadyExistsException,
 )
