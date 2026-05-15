@@ -14,7 +14,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.get(
-    "/me}",
+    "/me",
     response_model=ApiResponse[UserResponse],
     response_model_exclude_none=True,
 )
@@ -36,16 +36,15 @@ def update_user(
 ) -> ApiResponse[UserResponse]:
     service = UserService(uow)
     user = service.update_user(currenent_user.id, request)
-    return ApiResponse.success_response[UserResponse.from_user(user)]
+    return ApiResponse.success_response(data=UserResponse.from_user(user))
 
 
 @router.delete(
-    "/me}",
+    "/me",
     response_model_exclude_none=True,
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_user(
-    user_id: UUID,
     uow: UnitOfWork = Depends(get_uow),
     currenent_user: User = get_current_user(),
 ):

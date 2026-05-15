@@ -5,6 +5,7 @@ from app.models.user import User
 from app.schemas.v1.user import CreateUserRequest, UpdateUserRequest
 from app.unit_of_work.unit_of_work import UnitOfWork
 from app.exceptions.user_exception import (
+    EmptyDisplayName,
     UserNotFoundException,
     EmailAlreadyExistsException,
 )
@@ -18,6 +19,9 @@ class UserService:
         existing_user = self.uow.users.get_by_email(str(request.email))
         if existing_user:
             raise EmailAlreadyExistsException()
+
+        if len(request.display_name) <= 0:
+            raise EmptyDisplayName()
 
         user = User(
             display_name=request.display_name,
