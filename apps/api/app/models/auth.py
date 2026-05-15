@@ -9,10 +9,7 @@ class AuthProvider(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
-    user_id: UUID = Field(
-        foreign_key="users.id",
-        index=True,
-    )
+    user_id: UUID = Field(foreign_key="users.id", index=True, ondelete="CASCADE")
 
     provider: str = Field(index=True)
     """
