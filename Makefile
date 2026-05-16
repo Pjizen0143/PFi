@@ -5,7 +5,7 @@ prod:
 	ENVIRONMENT=production docker compose up -d
 
 test:
-	@ENVIRONMENT=test docker compose -p pfi-test run --rm api-test; \
+	@docker compose -f docker-compose.test.yml up --build --abort-on-container-exit; \
 	EXIT_CODE=$$?; \
-	ENVIRONMENT=test docker compose -p pfi-test down -v; \
+	docker compose -f docker-compose.test.yml down -v; \
 	exit $$EXIT_CODE
