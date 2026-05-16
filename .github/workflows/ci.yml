@@ -2,7 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches:
+      - main
+      - develop
+
   pull_request:
 
 concurrency:
@@ -14,57 +17,27 @@ permissions:
 
 jobs:
   api:
-    name: API (pytest)
+    name: API Tests
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/api
-
-    services:
-      postgres:
-        image: postgres:17-alpine
-        env:
-          POSTGRES_USER: ci
-          POSTGRES_PASSWORD: ci
-          POSTGRES_DB: pfi_ci
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U ci -d pfi_ci"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-
-    env:
-      DATABASE_URL: postgresql+psycopg://ci:ci@localhost:5432/pfi_ci
-      SECRET_KEY: ci-test-secret-key-at-least-32-chars-long-for-jwt
-      EXPIRE_TIME: "3600"
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          python-version: "3.13"
-
-      - name: Install dependencies
-        run: uv sync --frozen
-
-      - name: Run tests
-        run: uv run python -m pytest
+      - name: Run API tests
+        working-directory: .
+        run: make test
 
   web:
-    name: Web (lint & build)
+    name: Web Lint & Build
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: apps/web
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
