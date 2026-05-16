@@ -8,11 +8,17 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Prevent Python buffering stdout/stderr
 ENV PYTHONUNBUFFERED=1
 
-# Copy dependency files first (better Docker cache)
-COPY pyproject.toml .
+# Install uv
+RUN pip install --no-cache-dir uv
 
-# Install dependencies
-RUN python -c "import tomllib, subprocess, pathlib; deps = tomllib.loads(pathlib.Path('pyproject.toml').read_text())['project']['dependencies']; subprocess.run(['pip', 'install', '--no-cache-dir', *deps], check=True)"
+# Copy dependency files first (better Docker cache)
+COPY pyproject.toml uv.lock ./
+
+# Install dependencies into .venv
+RUN uv sync --frozen --no-dev
+
+# Add virtual environment to PATH
+ENV PATH="/api/.venv/bin:$PATH"
 
 # Copy backend source code
 COPY ./app ./app
