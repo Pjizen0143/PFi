@@ -2,7 +2,7 @@ from uuid import UUID
 
 from app.core.utils import utcnow
 from app.models.user import User
-from app.schemas.v1.user import CreateUserRequest, UpdateUserRequest
+from app.schemas.v1.user import UpdateUserRequest
 from app.unit_of_work.unit_of_work import UnitOfWork
 from app.exceptions.user_exception import (
     UserNotFoundException,
