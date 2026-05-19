@@ -2,11 +2,10 @@ from uuid import UUID
 
 from app.core.utils import utcnow
 from app.models.user import User
-from app.schemas.v1.user import CreateUserRequest, UpdateUserRequest
+from app.schemas.v1.user import UpdateUserRequest
 from app.unit_of_work.unit_of_work import UnitOfWork
 from app.exceptions.user_exception import (
     UserNotFoundException,
-    EmailAlreadyExistsException,
 )
 
 
@@ -14,31 +13,11 @@ class UserService:
     def __init__(self, uow: UnitOfWork) -> None:
         self.uow = uow
 
-    def create_user(self, request: CreateUserRequest) -> User:
-        existing_user = self.uow.users.get_by_email(str(request.email))
-        if existing_user:
-            raise EmailAlreadyExistsException()
-
-        if len(request.display_name) <= 0:
-            raise EmptyDisplayName()
-
-        user = User(
-            display_name=request.display_name,
-            email=str(request.email),
-        )
-        self.uow.users.add(user)
-        self.uow.commit()
-        self.uow.refresh(user)
-        return user
-
     def get_user(self, user_id: UUID) -> User:
         user = self.uow.users.get_by_id(user_id)
         if not user:
             raise UserNotFoundException()
         return user
-
-    def list_users(self) -> list[User]:
-        return self.uow.users.list()
 
     def update_user(self, user_id: UUID, request: UpdateUserRequest) -> User:
         user = self.get_user(user_id)
