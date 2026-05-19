@@ -4,6 +4,74 @@ FastAPI-based REST API for the PFi application.
 
 ---
 
+# Requirements
+
+- Python 3.13+
+- PostgreSQL
+- uv
+
+---
+
+# Local Development Setup
+
+## 1. Create Environment File
+
+Before running the application, create `.env.local` from `.env.example`:
+
+```bash
+# /apps/api/
+cp .env.example .env.local
+```
+
+Then update the environment variables if needed.
+> make sure you don't forget to attach your PostgreSQL URL with `postgresql+psycopg` format before start.
+
+---
+
+## 2. Install Dependencies
+
+Using `uv`:
+
+```bash
+uv sync
+```
+
+---
+
+## 3. Start Development Server
+
+Using FastAPI CLI:
+
+```bash
+fastapi dev app/main.py
+```
+
+Or using Uvicorn:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+---
+
+## API Documentation
+
+- Swagger UI → http://localhost:8000/docs
+- ReDoc → http://localhost:8000/redoc
+
+---
+
+# Environment Variables
+
+```env
+DATABASE_URL=postgresql+psycopg://user:password@db:5432/pfi
+SECRET_KEY=your-secret-key-here
+ALGORITHM=HS256
+EXPIRE_TIME=3600
+```
+
+---
+
 # Architecture Overview
 
 ## Design Patterns
@@ -61,19 +129,6 @@ app/
 ├── services/            # Business logic
 ├── unit_of_work/        # Transaction management
 └── tests/               # Test suite
-```
-
----
-
-# Environment Variables
-
-Create `.env.local` in `apps/api/`:
-
-```env
-DATABASE_URL=postgresql+psycopg://user:password@db:5432/pfi
-SECRET_KEY=your-secret-key-here
-ALGORITHM=HS256
-EXPIRE_TIME=3600
 ```
 
 ---
