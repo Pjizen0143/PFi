@@ -2,7 +2,8 @@ from uuid import UUID
 
 import jwt
 
-from fastapi import Depends, Header
+from fastapi import Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlmodel import Session
 
 from app.core.db import get_session
@@ -14,24 +15,25 @@ from app.repositories.user_repository import UserRepository
 from app.unit_of_work.unit_of_work import UnitOfWork
 
 
+security_scheme = HTTPBearer()
+
+
 def get_uow(session: Session = Depends(get_session)) -> UnitOfWork:
     return UnitOfWork(session)
 
 
 def _authenticate_user(
-    authorization: str | None = Header(default=None),
+    token_credentials: HTTPAuthorizationCredentials = Depends(security_scheme),
     uow: UnitOfWork = Depends(get_uow),
 ) -> User:
 
-    if authorization is None:
+    scheme = token_credentials.scheme
+    token = token_credentials.credentials
+
+    if not token or scheme.lower() != "bearer":
         raise InvalidCredentialsException()
 
     try:
-        scheme, token = authorization.split()
-
-        if scheme.lower() != "bearer":
-            raise InvalidCredentialsException()
-
         payload = decode_access_token(token)
 
         user_id: str | None = payload.get("sub")
@@ -39,7 +41,7 @@ def _authenticate_user(
         if user_id is None:
             raise InvalidCredentialsException()
 
-    except (ValueError, jwt.PyJWTError) as exc:
+    except jwt.PyJWTError as exc:
         raise InvalidCredentialsException() from exc
 
     user_repo = UserRepository(uow.session)
