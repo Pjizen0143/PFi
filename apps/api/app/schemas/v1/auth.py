@@ -6,9 +6,7 @@ EXPIRE_TIME = settings.EXPIRE_TIME
 
 
 class RegisterRequest(SQLModel):
-    display_name: str = Field(
-        ..., min_length=1, max_length=16, pattern=r"^[A-Za-z0-9_]+$"
-    )
+    display_name: str = Field(..., min_length=1, max_length=16, regex="^[A-Za-z0-9_]+$")
     email: EmailStr
     password: str
 
