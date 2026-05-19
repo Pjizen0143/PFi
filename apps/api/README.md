@@ -24,6 +24,7 @@ cp .env.example .env.local
 ```
 
 Then update the environment variables if needed.
+> make sure you don't forget to attach your PostgreSQL URL with `postgresql+psycopg` format before start.
 
 ---
 
@@ -37,19 +38,7 @@ uv sync
 
 ---
 
-## 3. Start PostgreSQL
-
-Make sure PostgreSQL is running before starting the API server.
-
-Example using Docker:
-
-```bash
-docker compose up -d db
-```
-
----
-
-## 4. Start Development Server
+## 3. Start Development Server
 
 Using FastAPI CLI:
 
