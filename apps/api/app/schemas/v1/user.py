@@ -4,11 +4,6 @@ from sqlmodel import SQLModel
 from app.models.user import User
 
 
-class CreateUserRequest(SQLModel):
-    display_name: str
-    email: EmailStr
-
-
 class UpdateUserRequest(SQLModel):
     display_name: str | None = None
     profile_image_url: str | None = None
