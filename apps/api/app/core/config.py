@@ -1,12 +1,16 @@
 from functools import lru_cache
-
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+ENV_PATH = ROOT_DIR / ".env"
+
+ACTUAL_ENV_FILE = ENV_PATH if ENV_PATH.exists() else None
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        extra="ignore",
-        case_sensitive=True,
+        extra="ignore", case_sensitive=True, env_file=ACTUAL_ENV_FILE
     )
 
     ENVIRONMENT: str = "local"
