@@ -1,26 +1,41 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-card: rgb(var(--card));
+  --color-primary: rgb(var(--primary));
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* ================= PFi Design System (Light Mode) ================= */
+    --background: 251 248 252;
+    /* #FBF8FC */
+    --foreground: 27 27 30;
+    /* #1B1B1E */
+    --card: 255 255 255;
+    /* #FFFFFF */
+    --primary: 3 22 56;
+    /* #031638 */
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  [data-theme=dark] {
+    /* ================= PFi Dark Mode ================= */
+    --background: 12 21 15;
+    /* #0C150F */
+    --foreground: 218 229 218;
+    /* #DAE5DA */
+    --card: 24 34 27;
+    /* #18221B */
+    --primary: 0 255 157;
+    /* #00FF9D */
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
 }
