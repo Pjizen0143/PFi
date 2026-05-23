@@ -60,4 +60,6 @@ jobs:
 
       - name: Build
 
+        env:
+          BACKEND_API_URL: http://api:8000
         run: pnpm run build
