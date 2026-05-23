@@ -18,6 +18,9 @@ FROM base AS builder
 COPY --from=deps /web/node_modules ./node_modules
 COPY . .
 
+ARG BACKEND_API_URL
+ENV BACKEND_API_URL=$BACKEND_API_URL
+
 RUN pnpm run build
 RUN pnpm prune --prod
 

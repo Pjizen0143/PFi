@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { InputHTMLAttributes, useState } from "react";
+
 import { Eye, EyeOff } from "lucide-react";
+
 import { useTranslations } from "next-intl";
 
-type PasswordInputProps = {
+type PasswordInputProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
 };
 
-export function PasswordInput({ label }: PasswordInputProps) {
+export function PasswordInput({ label, className, ...props }: PasswordInputProps) {
   const [show, setShow] = useState(false);
+
   const t = useTranslations("signin");
 
   return (
@@ -25,7 +28,8 @@ export function PasswordInput({ label }: PasswordInputProps) {
       <div className="relative">
         <input
           type={show ? "text" : "password"}
-          className="bg-background border-foreground/10 focus:border-primary focus:ring-primary/20 w-full rounded-xl border px-4 py-4 outline-none focus:ring-2"
+          className={`bg-background border-foreground/10 focus:border-primary focus:ring-primary/20 w-full rounded-xl border px-4 py-4 outline-none focus:ring-2 ${className} `}
+          {...props}
         />
 
         <button
@@ -33,7 +37,7 @@ export function PasswordInput({ label }: PasswordInputProps) {
           onClick={() => setShow(!show)}
           className="text-foreground/60 absolute top-1/2 right-4 -translate-y-1/2 hover:cursor-pointer"
         >
-          {show ? <EyeOff /> : <Eye />}
+          {show ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
     </div>
