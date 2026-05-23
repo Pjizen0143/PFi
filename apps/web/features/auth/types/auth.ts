@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/lib/types"; // ดึงส่วนกลางมาใช้
+import { ApiResponse } from "@/lib/types";
 
 export type LoginPayload = {
   email: string;
