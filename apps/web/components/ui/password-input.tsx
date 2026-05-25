@@ -8,9 +8,10 @@ import { useTranslations } from "next-intl";
 
 type PasswordInputProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
+  forgotPasswordShow?: boolean;
 };
 
-export function PasswordInput({ label, className, ...props }: PasswordInputProps) {
+export function PasswordInput({ label, forgotPasswordShow = false, className, ...props }: PasswordInputProps) {
   const [show, setShow] = useState(false);
 
   const t = useTranslations("signin");
@@ -20,9 +21,11 @@ export function PasswordInput({ label, className, ...props }: PasswordInputProps
       <div className="flex justify-between">
         <label className="font-medium">{label}</label>
 
-        <button type="button" className="text-primary font-semibold hover:cursor-pointer hover:opacity-80">
-          {t("forgot_password")}
-        </button>
+        {forgotPasswordShow && (
+          <button type="button" className="text-primary font-semibold hover:cursor-pointer hover:opacity-80">
+            {t("forgot_password")}
+          </button>
+        )}
       </div>
 
       <div className="relative">

@@ -8,19 +8,41 @@ import type { LoginResponse } from "../types/auth";
 export function useLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   async function handleLogin(email: string, password: string) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     try {
       setLoading(true);
       setError(null);
+      setSuccess(false);
+
+      if (!email.trim()) {
+        setError("Please enter your email");
+        return;
+      }
+
+      if (!emailRegex.test(email)) {
+        setError("Invalid email format");
+        return;
+      }
+
+      if (!password) {
+        setError("Please enter your password");
+        return;
+      }
 
       const res = await login({ email, password });
 
       if (res.success && res.data) {
         const token = res.data.access_token;
+        const displayName = res.data.display_name;
         localStorage.setItem("access_token", token);
+        localStorage.setItem("display_name", displayName);
 
-        console.log("Login success, :", res.data.display_name);
+        setSuccess(true);
+        console.log("Login success, :", displayName);
       } else {
         setError(res.message || "Login failed");
       }
@@ -39,6 +61,8 @@ export function useLogin() {
   return {
     loading,
     error,
+    success,
     handleLogin,
+    setError,
   };
 }

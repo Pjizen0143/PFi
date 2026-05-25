@@ -1,26 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // ✨ เรียกใช้งาน useRouter สำหรับเปลี่ยนหน้า (Next.js 13+ App Router)
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { useLogin } from "../hooks/use-login";
+import { useRegister } from "../hooks/use-register";
 
-export function LoginForm() {
-  const t = useTranslations("signin");
+export function RegisterForm() {
   const router = useRouter();
+  const t = useTranslations("signup");
 
-  const { handleLogin, loading, error, success, setError } = useLogin();
-
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreeTerms, setAgreeTerms] = useState(false);
 
-  // Clear error message when user starts typing
-  useEffect(() => {
-    if (error) setError(null);
-  }, [email, password]);
+  const { loading, error, success, handleRegister } = useRegister();
 
   useEffect(() => {
     if (success) {
@@ -30,11 +28,20 @@ export function LoginForm() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await handleLogin(email, password);
+    await handleRegister(email, password, confirmPassword, name);
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <Input
+        label={t("username")}
+        placeholder="MyName123"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        disabled={loading}
+        required
+      />
+
       <Input
         label={t("email")}
         placeholder="example@pfi.com"
@@ -48,15 +55,40 @@ export function LoginForm() {
       <PasswordInput
         label={t("password")}
         value={password}
-        forgotPasswordShow={true}
         onChange={(e) => setPassword(e.target.value)}
         disabled={loading}
         required
       />
 
+      <PasswordInput
+        label={t("confirm_password")}
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        disabled={loading}
+        required
+      />
+
+      <div className="flex items-start gap-3 select-none">
+        <input
+          id="terms"
+          type="checkbox"
+          checked={agreeTerms}
+          onChange={(e) => setAgreeTerms(e.target.checked)}
+          disabled={loading}
+          className="text-primary focus:ring-primary/50 mt-1 h-4 w-4 cursor-pointer rounded border-gray-300 disabled:opacity-50"
+        />
+        <label htmlFor="terms" className="text-muted-foreground cursor-pointer text-sm leading-relaxed">
+          {t.rich("demo_warning", {
+            demo_version: (chunks) => (
+              <span className="text-destructive text-primary font-semibold hover:underline">{chunks}</span>
+            ),
+          })}
+        </label>
+      </div>
+
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      <Button type="submit" disabled={loading} className="w-full">
+      <Button type="submit" disabled={loading || !agreeTerms} className="w-full">
         {loading ? (
           <div className="flex items-center justify-center gap-2">
             <svg className="h-4 w-4 animate-spin text-current" fill="none" viewBox="0 0 24 24">
