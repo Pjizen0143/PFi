@@ -16,8 +16,8 @@ Response:
   "success": true,
   "message": "User registered successfully",
   "data": {
-    "id": "uuid",
-    "email": "user@example.com"
+    "access_token": "eyJ...",
+    "token_type": "bearer"
   }
 }
 ```
