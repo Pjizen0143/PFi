@@ -34,7 +34,12 @@ export function LoginForm() {
         onChange={(e) => setEmail(e.target.value)}
       />
 
-      <PasswordInput label={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} />
+      <PasswordInput
+        label={t("password")}
+        value={password}
+        forgotPasswordShow={true}
+        onChange={(e) => setPassword(e.target.value)}
+      />
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 
