@@ -2,12 +2,30 @@
 
 Personal Finance Tracker application built with FastAPI backend and Next.js frontend.
 
+---
+
+## Preview
+
+### Theme Switching
+
+![Theme Showcase](docs/img/change-theme-showcase.gif)
+
+### Registration Page
+
+| English                                        | Thai                                           |
+| ---------------------------------------------- | ---------------------------------------------- |
+| ![Register EN](docs/img/register-en-light.png) | ![Register TH](docs/img/register-th-light.png) |
+
+---
+
 ## Features
 
 - JWT Authentication
 - User Management
 - Dockerized Testing Environment
 - CI/CD Pipeline
+- Multi-language Support (English / Thai)
+- Light / Dark Theme
 
 ## Tech Stack
 
@@ -25,7 +43,7 @@ Personal Finance Tracker application built with FastAPI backend and Next.js fron
 
 ## Monorepo Structure
 
-```
+```txt
 PFi/
 ├── apps/
 │   ├── api/          # FastAPI backend
