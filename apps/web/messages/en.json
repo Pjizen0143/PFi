@@ -1,0 +1,39 @@
+{
+    "common": {
+        "welcome": "Welcome"
+    },
+    "start": {
+        "title": "Manage Your Personal Finance",
+        "title_highlight": "Smarter",
+        "description": "Track expenses, manage wallets, monitor currencies, and grow your financial future in one place.",
+        "get_started": "Get Started",
+        "signin": "Sign In"
+    },
+    "navbar": {
+        "features": "Features",
+        "about": "About",
+        "contact": "Contact",
+        "signin": "Sign In"
+    },
+    "signin": {
+        "title": "Welcome Back!",
+        "email": "Email Address",
+        "password": "Password",
+        "submit": "Sign In",
+        "or_continue_with": "or sign in with",
+        "register_title": "Don't have an account?",
+        "register_btn": "Register",
+        "forgot_password": "Forgot Password?"
+    },
+    "signup": {
+        "title": "Create Your Account",
+        "username": "Username",
+        "email": "Email Address",
+        "password": "Password",
+        "confirm_password": "Confirm Password",
+        "demo_warning": "I understand this is a <demo_version>Demo version</demo_version>. Please do not use real data, as all information may be deleted at any time.",
+        "loading": "Creating account...",
+        "or_continue_with": "or sign up with",
+        "submit": "Sign Up"
+    }
+}

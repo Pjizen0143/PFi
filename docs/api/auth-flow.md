@@ -9,6 +9,7 @@ POST /api/v1/auth/register
 {
   "email": "user@example.com",
   "password": "securepass123"
+  "display_name": "myname"
 }
 
 Response:
@@ -18,6 +19,8 @@ Response:
   "data": {
     "access_token": "eyJ...",
     "token_type": "bearer"
+    "expires_in": 3600
+    "display_name": "string"
   }
 }
 ```
@@ -54,6 +57,8 @@ Response:
   "data": {
     "access_token": "eyJ...",
     "token_type": "bearer"
+    "expires_in": 3600
+    "display_name": "string"
   }
 }
 ```

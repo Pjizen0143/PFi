@@ -1,23 +1,30 @@
-FROM node:22-alpine AS deps
+FROM node:22-alpine AS base
 
 WORKDIR /web
 
-COPY package.json package-lock.json ./
-RUN npm ci
+RUN apk add --no-cache libc6-compat python3 make g++
 
-FROM node:22-alpine AS builder
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable && corepack prepare pnpm@9 --activate
 
-WORKDIR /web
+FROM base AS deps
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+FROM base AS builder
 
 COPY --from=deps /web/node_modules ./node_modules
 COPY . .
 
-RUN npm run build
-RUN npm prune --omit=dev
+ARG BACKEND_API_URL
+ENV BACKEND_API_URL=$BACKEND_API_URL
 
-FROM node:22-alpine AS runner
+RUN pnpm run build
+RUN pnpm prune --prod
 
-WORKDIR /web
+FROM base AS runner
 
 ENV NODE_ENV=production
 ENV PORT=3000
@@ -29,4 +36,4 @@ COPY --from=builder /web/public ./public
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start", "--", "-p", "3000"]
+CMD ["pnpm", "start"]
