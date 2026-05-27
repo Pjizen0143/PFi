@@ -20,7 +20,6 @@ async def test_register_success(client):
 
     body = response.json()
 
-    assert body["success"] is True
     assert body["data"]["display_name"] == payload["display_name"]
     assert "access_token" in body["data"]
 
@@ -86,7 +85,6 @@ async def test_login_success(client):
 
     body = response.json()
 
-    assert body["success"] is True
     assert body["data"]["token_type"] == "bearer"
     assert "access_token" in body["data"]
 

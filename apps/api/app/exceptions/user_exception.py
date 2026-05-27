@@ -1,15 +1,15 @@
 from fastapi import status
-
 from app.exceptions.app_exception import AppException
+from app.exceptions.error_codes import ErrorCode
 
 
 class EmailAlreadyExistsException(AppException):
     status_code = status.HTTP_409_CONFLICT
-    code = "EMAIL_ALREADY_EXISTS"
+    code = ErrorCode.CONFLICT
     message = "Email already exists"
 
 
 class UserNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
-    code = "USER_NOT_FOUND"
+    code = ErrorCode.NOT_FOUND
     message = "User not found"
