@@ -1,6 +1,12 @@
+export type ValidationError = {
+  field: string;
+  reason: string;
+};
+
 export type ErrorDetail = {
   code: string;
-  details: Record<string, unknown> | null;
+  message: string;
+  details: ValidationError[] | null;
 };
 
 export type PaginationMeta = {
@@ -11,8 +17,6 @@ export type PaginationMeta = {
 };
 
 export type ApiResponse<T> = {
-  success: boolean;
-  message: string;
   data: T | null;
   error: ErrorDetail | null;
   meta: PaginationMeta | null;
