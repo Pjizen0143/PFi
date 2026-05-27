@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Button } from "@/components/ui/button";
+import { FormErrorHandler } from "@/lib/utils/error-handler";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useRegister } from "../hooks/use-register";
 
 export function RegisterForm() {
@@ -18,7 +19,7 @@ export function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
 
-  const { loading, error, success, handleRegister } = useRegister();
+  const { loading, error, success, validationErrors, handleRegister } = useRegister();
 
   useEffect(() => {
     if (success) {
@@ -50,6 +51,7 @@ export function RegisterForm() {
         onChange={(e) => setEmail(e.target.value)}
         disabled={loading}
         required
+        className={FormErrorHandler.getFieldError(validationErrors, "email") ? "border-red-500" : ""}
       />
 
       <PasswordInput

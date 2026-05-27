@@ -18,9 +18,11 @@ class AppException(HTTPException):
         headers: dict[str, str] | None = None,
     ) -> None:
         final_message = message or self.message
+        
+        final_details = details if details is not None else getattr(self, "details", None)
 
         self.message = final_message
-        self.details = details
+        self.details = final_details
 
         super().__init__(
             status_code=self.status_code,
