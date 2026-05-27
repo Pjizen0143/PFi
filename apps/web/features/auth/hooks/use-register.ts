@@ -1,20 +1,35 @@
 "use client";
 
+import type { ValidationError } from "@/lib/types";
+import { FormErrorHandler } from "@/lib/utils/error-handler";
 import { useState } from "react";
-import axios from "axios";
 import { register } from "../services/auth-service";
-import type { RegisterResponse } from "../types/auth";
 
 export function useRegister() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[] | null>(null);
   const [success, setSuccess] = useState(false);
 
-  async function handleRegister(email: string, password: string, confirm_password: string, display_name: string) {
+  async function handleRegister(
+    email: string, 
+    password: string, 
+    confirm_password: string, 
+    display_name: string
+  ) {
+    const displayNameRegex = /^[A-Za-z0-9_]+$/;
+
     try {
       setLoading(true);
       setError(null);
+      setValidationErrors(null);
       setSuccess(false);
+
+      // Check if display name matches the allowed pattern
+      if (!displayNameRegex.test(display_name)) {
+        setError("A-Z, a-z, 0-9, and _ only for display name");
+        return;
+      }
 
       if (password !== confirm_password) {
         setError("Passwords do not match");
@@ -23,23 +38,22 @@ export function useRegister() {
 
       const res = await register({ email, password, display_name });
 
-      if (res.success && res.data) {
+      // --- [Server-side Success] ---
+      if (res.data) {
         const token = res.data.access_token;
         const displayName = res.data.display_name;
+        
         localStorage.setItem("access_token", token);
         localStorage.setItem("display_name", displayName);
+        
         setSuccess(true);
-        console.log("Register success, :", displayName);
       } else {
-        setError(res.message || "Register failed");
+        setError("Register failed: Unknown response structure");
       }
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const serverError = err.response?.data as RegisterResponse | undefined;
-        setError(serverError?.message || serverError?.error?.code || "Register failed");
-      } else {
-        setError("Something went wrong");
-      }
+      // --- [Server-side Error Handling using Utility] ---
+      setError(FormErrorHandler.getErrorMessage(err, "Register failed"));
+      setValidationErrors(FormErrorHandler.getValidationErrors(err));
     } finally {
       setLoading(false);
     }
@@ -48,6 +62,7 @@ export function useRegister() {
   return {
     loading,
     error,
+    validationErrors,
     success,
     handleRegister,
   };
