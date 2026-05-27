@@ -1,13 +1,11 @@
-from typing import Any, Generic, TypeVar
+from typing import Any, TypeVar
 
-from pydantic import ConfigDict
-from sqlmodel import SQLModel
-
+from pydantic import BaseModel, ConfigDict
 
 T = TypeVar("T")
 
 
-class BaseSchema(SQLModel):
+class BaseSchema(BaseModel):
     """
     Base schema for all response models.
     """
@@ -26,20 +24,18 @@ class BaseSchema(SQLModel):
         return super().model_dump_json(**kwargs)
 
 
-class ErrorDetail(BaseSchema):
-    """
-    Error detail response model.
-    """
+class ValidationError(BaseSchema):
+    field: str
+    reason: str
 
+
+class ErrorDetail(BaseSchema):
     code: str
-    details: dict[str, Any] | None = None
+    message: str 
+    details: list[ValidationError] | None = None
 
 
 class PaginationMeta(BaseSchema):
-    """
-    Pagination metadata.
-    """
-
     page: int
     limit: int
     total: int
@@ -51,9 +47,6 @@ class ApiResponse[T](BaseSchema):
     Generic API response model.
     """
 
-    success: bool = True
-    message: str
-
     data: T | None = None
     error: ErrorDetail | None = None
     meta: PaginationMeta | None = None
@@ -61,13 +54,10 @@ class ApiResponse[T](BaseSchema):
     @classmethod
     def success_response(
         cls,
-        message: str | None = "Request completed",
         data: T | None = None,
         meta: PaginationMeta | None = None,
     ) -> "ApiResponse[T]":
         return cls(
-            success=True,
-            message=message,
             data=data,
             meta=meta,
         )
@@ -76,14 +66,13 @@ class ApiResponse[T](BaseSchema):
     def error_response(
         cls,
         code: str,
-        message: str | None = "Request failed",
-        details: dict[str, Any] | None = None,
-    ) -> "ApiResponse[None]":
+        message: str = "Unexpected error occurred.",
+        details: list[ValidationError] | None = None,
+    ) -> "ApiResponse[Any]":
         return cls(
-            success=False,
-            message=message,
             error=ErrorDetail(
                 code=code,
+                message=message,
                 details=details,
             ),
         )
