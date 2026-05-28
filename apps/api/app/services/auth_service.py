@@ -3,10 +3,11 @@ from app.core.security import (
     hash_password,
     verify_password,
 )
-from app.models.auth import (
+from app.models import (
     AuthProvider,
+    User
 )
-from app.models.user import User
+
 from app.schemas.v1.auth import (
     AuthResponse,
     LoginRequest,
@@ -45,12 +46,8 @@ class AuthService:
             email=request.email,
         )
 
-        self.uow.users.add(user)
-
-        self.uow.session.flush()
-
         auth_provider = AuthProvider(
-            user_id=user.id,
+            user=user,
             provider="local",
             email=request.email,
             password_hash=hash_password(
@@ -58,9 +55,9 @@ class AuthService:
             ),
         )
 
-        self.uow.auth.add(
-            auth_provider,
-        )
+        self.uow.users.add(user)
+
+        self.uow.auth.add(auth_provider)
 
         self.uow.commit()
 
@@ -91,9 +88,7 @@ class AuthService:
         if not verify_password(request.password, auth_provider.password_hash):
             raise InvalidCredentialsException()
 
-        user = self.uow.users.get_by_id(
-            auth_provider.user_id,
-        )
+        user = auth_provider.user
 
         if not user:
             raise UserNotFoundException()

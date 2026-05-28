@@ -1,7 +1,11 @@
 from uuid import UUID, uuid4
 from datetime import datetime
-from sqlmodel import Field, SQLModel
+from typing import TYPE_CHECKING
+from sqlmodel import Field, SQLModel, Relationship
 from app.core.utils import utcnow
+
+if TYPE_CHECKING:
+    from apps.api.app.models.user import User
 
 
 class AuthProvider(SQLModel, table=True):
@@ -10,6 +14,7 @@ class AuthProvider(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
     user_id: UUID = Field(foreign_key="users.id", index=True, ondelete="CASCADE")
+    user: "User" = Relationship(back_populates="auth_providers")
 
     provider: str = Field(index=True)
     """
