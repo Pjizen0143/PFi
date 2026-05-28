@@ -6,9 +6,9 @@ Personal Finance Tracker application built with FastAPI backend and Next.js fron
 
 ## Preview
 
-### Theme Switching
+### Theme And Language Switching
 
-![Theme Showcase](docs/img/change-theme-showcase.gif)
+![Theme Showcase](docs/gif/preview-showcase.gif)
 
 ### Registration Page
 
