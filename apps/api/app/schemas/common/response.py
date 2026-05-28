@@ -1,13 +1,11 @@
-from typing import Any, Generic, TypeVar
+from typing import Any, TypeVar, overload
 
-from pydantic import ConfigDict
-from sqlmodel import SQLModel
-
+from pydantic import BaseModel, ConfigDict
 
 T = TypeVar("T")
 
 
-class BaseSchema(SQLModel):
+class BaseSchema(BaseModel):
     """
     Base schema for all response models.
     """
@@ -26,24 +24,34 @@ class BaseSchema(SQLModel):
         return super().model_dump_json(**kwargs)
 
 
-class ErrorDetail(BaseSchema):
-    """
-    Error detail response model.
-    """
+class ValidationError(BaseSchema):
+    field: str
+    reason: str
 
+
+class ErrorDetail(BaseSchema):
     code: str
-    details: dict[str, Any] | None = None
+    message: str 
+    details: list[ValidationError] | None = None
 
 
 class PaginationMeta(BaseSchema):
-    """
-    Pagination metadata.
-    """
-
     page: int
     limit: int
     total: int
     has_next: bool
+
+
+class ApiSuccessResponse[T](BaseSchema):
+    data: T
+
+
+class ApiSuccessResponseWithMeta[T](ApiSuccessResponse[T]):
+    meta: PaginationMeta
+
+
+class ApiErrorResponse(BaseSchema):
+    error: ErrorDetail
 
 
 class ApiResponse[T](BaseSchema):
@@ -51,39 +59,52 @@ class ApiResponse[T](BaseSchema):
     Generic API response model.
     """
 
-    success: bool = True
-    message: str
-
     data: T | None = None
     error: ErrorDetail | None = None
     meta: PaginationMeta | None = None
 
+    @overload
     @classmethod
     def success_response(
         cls,
-        message: str | None = "Request completed",
-        data: T | None = None,
+        data: T,
+        meta: None = None,
+    ) -> ApiSuccessResponse[T]: ...
+
+    @overload
+    @classmethod
+    def success_response(
+        cls,
+        data: T,
+        meta: PaginationMeta,
+    ) -> ApiSuccessResponseWithMeta[T]: ...
+
+    @classmethod
+    def success_response(
+        cls,
+        data: T,
         meta: PaginationMeta | None = None,
-    ) -> "ApiResponse[T]":
-        return cls(
-            success=True,
-            message=message,
+    ) -> ApiSuccessResponse[T] | ApiSuccessResponseWithMeta[T]:
+        if meta is not None:
+            return ApiSuccessResponseWithMeta(
+                data=data,
+                meta=meta,
+            )
+        return ApiSuccessResponse(
             data=data,
-            meta=meta,
         )
 
     @classmethod
     def error_response(
         cls,
         code: str,
-        message: str | None = "Request failed",
-        details: dict[str, Any] | None = None,
-    ) -> "ApiResponse[None]":
-        return cls(
-            success=False,
-            message=message,
+        message: str = "Unexpected error occurred.",
+        details: list[ValidationError] | None = None,
+    ) -> ApiErrorResponse:
+        return ApiErrorResponse(
             error=ErrorDetail(
                 code=code,
+                message=message,
                 details=details,
             ),
         )

@@ -1,7 +1,11 @@
 from uuid import UUID, uuid4
 from datetime import datetime
-from sqlmodel import Field, SQLModel
+from typing import TYPE_CHECKING
+from sqlmodel import Field, SQLModel, Relationship
 from app.core.utils import utcnow
+
+if TYPE_CHECKING:
+    from apps.api.app.models.auth import AuthProvider
 
 
 class User(SQLModel, table=True):
@@ -18,3 +22,8 @@ class User(SQLModel, table=True):
 
     created_at: datetime = Field(default_factory=utcnow)
     updated_at: datetime = Field(default_factory=utcnow)
+
+    auth_providers: list["AuthProvider"] = Relationship(
+        back_populates="user",
+        cascade_delete=True
+        )

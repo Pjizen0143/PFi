@@ -43,7 +43,6 @@ async def test_get_current_user(client):
 
     body = response.json()
 
-    assert body["success"] is True
     assert body["data"]["email"] == "user@example.com"
 
 
@@ -59,7 +58,7 @@ async def test_update_current_user(client):
     headers = await create_and_login_user(client)
 
     payload = {
-        "display_name": "Updated Name",
+        "display_name": "Updated_Name",
     }
 
     response = await client.patch(
@@ -72,8 +71,7 @@ async def test_update_current_user(client):
 
     body = response.json()
 
-    assert body["success"] is True
-    assert body["data"]["display_name"] == "Updated Name"
+    assert body["data"]["display_name"] == "Updated_Name"
 
 
 async def test_delete_current_user(client):

@@ -1,13 +1,14 @@
 "use client";
 
+import type { ValidationError } from "@/lib/types";
+import { FormErrorHandler } from "@/lib/utils/error-handler";
 import { useState } from "react";
-import axios from "axios";
 import { login } from "../services/auth-service";
-import type { LoginResponse } from "../types/auth";
 
 export function useLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[] | null>(null);
   const [success, setSuccess] = useState(false);
 
   async function handleLogin(email: string, password: string) {
@@ -16,8 +17,10 @@ export function useLogin() {
     try {
       setLoading(true);
       setError(null);
+      setValidationErrors(null);
       setSuccess(false);
 
+      // --- [Client-side Validation] ---
       if (!email.trim()) {
         setError("Please enter your email");
         return;
@@ -35,24 +38,23 @@ export function useLogin() {
 
       const res = await login({ email, password });
 
-      if (res.success && res.data) {
+      // --- [Server-side Success] ---
+      if (res.data) {
         const token = res.data.access_token;
         const displayName = res.data.display_name;
+        
         localStorage.setItem("access_token", token);
         localStorage.setItem("display_name", displayName);
 
         setSuccess(true);
-        console.log("Login success, :", displayName);
+        console.log("Login success, welcome:", displayName);
       } else {
-        setError(res.message || "Login failed");
+        setError("Login failed: Unexpected response from server");
       }
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const serverError = err.response?.data as LoginResponse | undefined;
-        setError(serverError?.message || serverError?.error?.code || "Login failed");
-      } else {
-        setError("Something went wrong");
-      }
+      // --- [Server-side Error Handling using Utility] ---
+      setError(FormErrorHandler.getErrorMessage(err, "Login failed"));
+      setValidationErrors(FormErrorHandler.getValidationErrors(err));
     } finally {
       setLoading(false);
     }
@@ -61,6 +63,7 @@ export function useLogin() {
   return {
     loading,
     error,
+    validationErrors,
     success,
     handleLogin,
     setError,

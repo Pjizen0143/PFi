@@ -1,15 +1,14 @@
-from pydantic import EmailStr
-from sqlmodel import SQLModel
+from pydantic import EmailStr, BaseModel, Field
 
 from app.models.user import User
 
 
-class UpdateUserRequest(SQLModel):
-    display_name: str | None = None
+class UpdateUserRequest(BaseModel):
+    display_name: str = Field(..., min_length=1, max_length=16, pattern="^[A-Za-z0-9_]+$")
     profile_image_url: str | None = None
 
 
-class UserResponse(SQLModel):
+class UserResponse(BaseModel):
     id: str
     display_name: str
     email: EmailStr | None
