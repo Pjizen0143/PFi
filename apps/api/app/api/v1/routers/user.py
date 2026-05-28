@@ -1,13 +1,13 @@
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, status
 
 from app.api.deps import get_current_user, get_uow
 from app.schemas.v1.user import UpdateUserRequest, UserResponse
-from app.schemas.common.response import ApiResponse
+from app.schemas.common.response import ApiResponse, ApiSuccessResponse
 from app.services.user_service import UserService
 from app.unit_of_work.unit_of_work import UnitOfWork
 from app.models.user import User
+from app.utils.openapi import exception_response
+from app.exceptions import UserNotFoundException, EmailAlreadyExistsException, ValidationException
 
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -15,25 +15,30 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.get(
     "/me",
-    response_model=ApiResponse[UserResponse],
+    response_model=ApiSuccessResponse[UserResponse],
     response_model_exclude_none=True,
+    responses=exception_response(UserNotFoundException, ValidationException)
 )
 def get_user(
     currenent_user: User = get_current_user(),
-) -> ApiResponse[UserResponse]:
+) -> ApiSuccessResponse[UserResponse]:
     return ApiResponse.success_response(data=UserResponse.from_user(currenent_user))
 
 
 @router.patch(
     "/me",
-    response_model=ApiResponse[UserResponse],
+    response_model=ApiSuccessResponse[UserResponse],
     response_model_exclude_none=True,
+    responses=exception_response(
+        UserNotFoundException, 
+        EmailAlreadyExistsException,
+        ValidationException),
 )
 def update_user(
     request: UpdateUserRequest,
     currenent_user: User = get_current_user(),
     uow: UnitOfWork = Depends(get_uow),
-) -> ApiResponse[UserResponse]:
+) -> ApiSuccessResponse[UserResponse]:
     service = UserService(uow)
     user = service.update_user(currenent_user.id, request)
     return ApiResponse.success_response(data=UserResponse.from_user(user))
@@ -43,6 +48,7 @@ def update_user(
     "/me",
     response_model_exclude_none=True,
     status_code=status.HTTP_204_NO_CONTENT,
+    responses=exception_response(UserNotFoundException, ValidationException)
 )
 def delete_user(
     uow: UnitOfWork = Depends(get_uow),
