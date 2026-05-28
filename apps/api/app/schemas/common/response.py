@@ -1,4 +1,4 @@
-from typing import Any, TypeVar
+from typing import Any, TypeVar, overload
 
 from pydantic import BaseModel, ConfigDict
 
@@ -63,15 +63,35 @@ class ApiResponse[T](BaseSchema):
     error: ErrorDetail | None = None
     meta: PaginationMeta | None = None
 
+    @overload
+    @classmethod
+    def success_response(
+        cls,
+        data: T,
+        meta: None = None,
+    ) -> ApiSuccessResponse[T]: ...
+
+    @overload
+    @classmethod
+    def success_response(
+        cls,
+        data: T,
+        meta: PaginationMeta,
+    ) -> ApiSuccessResponseWithMeta[T]: ...
+
     @classmethod
     def success_response(
         cls,
         data: T,
         meta: PaginationMeta | None = None,
-    ) -> ApiSuccessResponse[T]:
+    ) -> ApiSuccessResponse[T] | ApiSuccessResponseWithMeta[T]:
+        if meta is not None:
+            return ApiSuccessResponseWithMeta(
+                data=data,
+                meta=meta,
+            )
         return ApiSuccessResponse(
             data=data,
-            meta=meta,
         )
 
     @classmethod
