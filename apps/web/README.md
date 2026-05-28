@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Web Application
 
-## Getting Started
+Next.js frontend application for the PFi project.
 
-First, run the development server:
+---
+
+# Requirements
+
+- Node.js 22+
+- pnpm
+
+---
+
+# Local Development Setup
+
+## 1. Install Dependencies
+
+Install dependencies from the project root:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+If you encounter this error:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+ERR_PNPM_IGNORED_BUILDS
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run:
 
-## Learn More
+```bash
+pnpm approve-builds
+```
 
-To learn more about Next.js, take a look at the following resources:
+Then:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Press `a` to approve all packages
+- Press `Enter`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+After that, run installation again:
 
-## Deploy on Vercel
+```bash
+pnpm install
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 2. Create Environment File
+
+Before starting the application, create `.env.local` from `.env.example`:
+
+```bash
+# /apps/web/
+cp .env.example .env.local
+```
+
+Update the environment variables if needed.
+
+---
+
+## 3. Start Development Server
+
+Move into the web application directory:
+
+```bash
+cd apps/web
+```
+
+Start the Next.js development server:
+
+```bash
+pnpm dev
+```
+
+---
+
+# Application URL
+
+```text
+http://localhost:3000
+```
+
+---
+
+# Notes
+
+- Docker is optional for frontend development.
+- This repository uses a pnpm workspace (monorepo structure).
+- Only the `apps/web` application is required to run the frontend locally.
+
+---
+
+# Folder Structure
+
+```text
+apps/web/
+├── app/                 # Next.js App Router
+├── components/          # Shared UI components
+├── features/            # Feature-based modules
+├── i18n/                # Internationalization config
+├── lib/                 # Utilities and helper functions
+├── messages/            # Translation message files
+├── providers/           # React providers
+├── public/              # Static assets
+├── proxy.ts             # Next.js middleware
+├── .env.example         # Environment variables example
+```
