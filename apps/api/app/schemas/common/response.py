@@ -42,6 +42,18 @@ class PaginationMeta(BaseSchema):
     has_next: bool
 
 
+class ApiSuccessResponse[T](BaseSchema):
+    data: T
+
+
+class ApiSuccessResponseWithMeta[T](ApiSuccessResponse[T]):
+    meta: PaginationMeta
+
+
+class ApiErrorResponse(BaseSchema):
+    error: ErrorDetail
+
+
 class ApiResponse[T](BaseSchema):
     """
     Generic API response model.
@@ -54,10 +66,10 @@ class ApiResponse[T](BaseSchema):
     @classmethod
     def success_response(
         cls,
-        data: T | None = None,
+        data: T,
         meta: PaginationMeta | None = None,
-    ) -> "ApiResponse[T]":
-        return cls(
+    ) -> ApiSuccessResponse[T]:
+        return ApiSuccessResponse(
             data=data,
             meta=meta,
         )
@@ -68,8 +80,8 @@ class ApiResponse[T](BaseSchema):
         code: str,
         message: str = "Unexpected error occurred.",
         details: list[ValidationError] | None = None,
-    ) -> "ApiResponse[Any]":
-        return cls(
+    ) -> ApiErrorResponse:
+        return ApiErrorResponse(
             error=ErrorDetail(
                 code=code,
                 message=message,

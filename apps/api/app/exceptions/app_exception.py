@@ -31,6 +31,15 @@ class AppException(HTTPException):
         )
 
 
+    @classmethod
+    def example(cls) -> dict:
+        return ApiResponse.error_response(
+            code=cls.code,
+            message=cls.message,
+            details=getattr(cls, "details", None),
+        ).model_dump()
+
+
 async def app_exception_handler(
     request: Request,
     exc: AppException,
