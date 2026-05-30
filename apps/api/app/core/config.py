@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     EXPIRE_TIME: int
 
+    REDIS_HOST: str 
+    REDIS_PORT: int
+
 
 @lru_cache
 def get_settings() -> Settings:
