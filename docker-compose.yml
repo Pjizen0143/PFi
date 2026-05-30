@@ -6,6 +6,9 @@ x-common-environment: &common-environment
 x-postgres-env-file: &postgres-env-file
   - infra/postgres/.env.${ENVIRONMENT:-local}
 
+x-redis-env-file: &redis-env-file
+  - infra/redis/.env.${ENVIRONMENT:-local}
+
 x-api-env-files: &api-env-files
   - apps/api/.env.${ENVIRONMENT:-local}
 
@@ -36,6 +39,25 @@ services:
     networks:
       - backend
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    env_file: *redis-env-file
+    expose:
+      - "${REDIS_PORT:-6379}"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - backend
+
   api:
     build:
       context: ./apps/api
@@ -44,6 +66,8 @@ services:
     restart: unless-stopped
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     env_file: *api-env-files
     environment:
@@ -114,3 +138,4 @@ networks:
 
 volumes:
   postgres_data:
+  redis_data:
