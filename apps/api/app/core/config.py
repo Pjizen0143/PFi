@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     REDIS_HOST: str 
     REDIS_PORT: int
 
+    EXCHANGE_RATE_API_URL: str = "localhost"
+
 
 @lru_cache
 def get_settings() -> Settings:
