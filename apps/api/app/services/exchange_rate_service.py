@@ -15,8 +15,8 @@ from app.schemas.v1.exchange_rate import (
 
 class ExchangeRateService:
 
-    def __init__(self):
-        self.provider = ExchangeRateProvider()
+    def __init__(self, provider: ExchangeRateProvider):
+        self.provider = provider
 
     async def get_rates(
         self,
