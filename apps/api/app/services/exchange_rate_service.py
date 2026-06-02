@@ -3,7 +3,8 @@ import json
 from email.utils import parsedate_to_datetime
 from app.core.utils import utcnow
 
-from app.core.redis import redis_client
+from redis.asyncio import Redis
+
 from app.repositories.exchange_rate_provider import (
     ExchangeRateProvider
 )
@@ -15,8 +16,9 @@ from app.schemas.v1.exchange_rate import (
 
 class ExchangeRateService:
 
-    def __init__(self):
-        self.provider = ExchangeRateProvider()
+    def __init__(self, provider: ExchangeRateProvider, redis: Redis):
+        self.provider = provider
+        self.redis = redis
 
     async def get_rates(
         self,
@@ -25,12 +27,11 @@ class ExchangeRateService:
 
         cache_key = f"rates:{base_currency}"
 
-        cached = await redis_client.get(
+        cached = await self.redis.get(
             cache_key
         )
 
         if cached:
-            print("Cache hit")
             return ExchangeRateResponse.model_validate(
                 json.loads(cached)
             )
@@ -66,10 +67,10 @@ class ExchangeRateService:
             - int(utcnow().timestamp())
         )
 
-        await redis_client.setex(
-            cache_key,
-            ttl,
-            response.model_dump_json()
-        )
-
+        if ttl > 0:
+            await self.redis.set(
+                cache_key,
+                ex=ttl,
+                value=response.model_dump_json()
+            )
         return response
