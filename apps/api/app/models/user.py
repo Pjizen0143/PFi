@@ -6,6 +6,7 @@ from app.core.utils import utcnow
 
 if TYPE_CHECKING:
     from apps.api.app.models.auth import AuthProvider
+    from app.models.wallet import Wallet
 
 
 class User(SQLModel, table=True):
@@ -24,6 +25,11 @@ class User(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=utcnow)
 
     auth_providers: list["AuthProvider"] = Relationship(
+        back_populates="user",
+        cascade_delete=True
+        )
+    
+    wallets: list["Wallet"] = Relationship(
         back_populates="user",
         cascade_delete=True
         )
