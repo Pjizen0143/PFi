@@ -1,6 +1,6 @@
 from uuid import UUID
 from app.models.wallet import Wallet
-from app.schemas.v1.wallet import CreateWalletRequest
+from app.schemas.v1.wallet import CreateWalletRequest, UpdateWalletRequest
 from app.unit_of_work.unit_of_work import UnitOfWork
 from app.exceptions.wallet_exception import WalletNotFoundException, CurrencyNotFoundException
 
@@ -36,3 +36,11 @@ class WalletService:
         wallet = self.get_wallet(wallet_id, user_id)
         self.uow.wallets.delete(wallet)
         self.uow.commit()
+
+    def update_wallet(self, wallet_id: UUID, user_id: UUID, request: UpdateWalletRequest) -> Wallet:
+        wallet = self.get_wallet(wallet_id, user_id)
+        if request.name is not None:
+            wallet.name = request.name
+        self.uow.commit()
+        self.uow.refresh(wallet)
+        return wallet

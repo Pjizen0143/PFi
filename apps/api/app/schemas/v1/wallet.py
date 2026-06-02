@@ -2,9 +2,15 @@ from pydantic import BaseModel
 from datetime import datetime
 from app.models.wallet import Wallet
 
+
 class CreateWalletRequest(BaseModel):
     name: str
     currency_code: str
+
+
+class UpdateWalletRequest(BaseModel):
+    name: str | None = None
+
 
 class WalletResponse(BaseModel):
     id: str
