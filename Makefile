@@ -4,11 +4,13 @@ dev:
 dev-db:
 	ENVIRONMENT=local docker compose up db -d
 
-dev-web:
-	ENVIRONMENT=local docker compose up web --build --no-deps
+dev-api:
+	ENVIRONMENT=local docker compose up api --build --no-deps
 
-dev-web-db:
-	ENVIRONMENT=local docker compose up db -d
+dev-api-db:
+	ENVIRONMENT=local docker compose up api db --build
+
+dev-web:
 	ENVIRONMENT=local docker compose up web --build --no-deps
 
 prod:
