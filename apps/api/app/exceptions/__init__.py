@@ -5,3 +5,7 @@ from .user_exception import (
     EmailAlreadyExistsException,
 )
 from .validation_exception import ValidationException
+from .wallet_exception import (
+    WalletNotFoundException,
+    CurrencyNotFoundException,
+)
