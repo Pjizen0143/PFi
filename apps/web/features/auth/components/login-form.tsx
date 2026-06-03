@@ -24,7 +24,7 @@ export function LoginForm() {
 
   useEffect(() => {
     if (success) {
-      router.push("/");
+      router.push("/dashboard");
     }
   }, [success, router]);
 
