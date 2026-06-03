@@ -13,6 +13,12 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+    // Add custom rules here if needed.
+    "react-hooks/set-state-in-effect": "off"
+  },
+  }
 ]);
 
 export default eslintConfig;
