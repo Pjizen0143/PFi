@@ -32,7 +32,9 @@ export function WalletDashboard() {
         ) : wallets.length === 0 ? (
           <div className="bg-card border-border mx-auto mt-12 max-w-md rounded-2xl border p-8 text-center shadow-sm">
             <h2 className="mb-4 text-2xl font-bold">Create Your First Wallet</h2>
-            <p className="text-foreground/70 mb-6">You don't have any wallets yet. Please create one to get started.</p>
+            <p className="text-foreground/70 mb-6">
+              {"You don't have any wallets yet. Please create one to get started."}
+            </p>
             <Button onClick={() => setIsModalOpen(true)} className="mt-4">
               Create Wallet
             </Button>
@@ -52,13 +54,16 @@ export function WalletDashboard() {
                     </span>
                   </div>
                   <p className="mt-2 text-3xl font-bold">
-                    {(wallet.balance ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {(wallet.balance ?? 0).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </p>
                 </div>
               </div>
             ))}
 
-            <div 
+            <div
               onClick={() => setIsModalOpen(true)}
               className="bg-card border-border hover:bg-card/80 flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed p-6 text-center transition"
             >

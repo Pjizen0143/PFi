@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
-import { CreateWalletPayload } from "../../types";
+import { CreateWalletPayload } from "../types/wallets";
 
 interface CreateWalletModalProps {
   isOpen: boolean;
@@ -49,7 +49,6 @@ export function CreateWalletModal({ isOpen, onClose, handleCreateWallet, loading
             <option value="USD">USD - US Dollar</option>
             <option value="EUR">EUR - Euro</option>
             <option value="THB">THB - Thai Baht</option>
-            <option value="JPY">JPY - Japanese Yen</option>
           </select>
         </div>
         <Button type="submit" disabled={loading} className="mt-4">

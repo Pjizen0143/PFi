@@ -17,11 +17,6 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Clear error message when user starts typing
-  useEffect(() => {
-    if (error) setError(null);
-  }, [email, password]);
-
   useEffect(() => {
     if (success) {
       router.push("/dashboard");
@@ -40,7 +35,10 @@ export function LoginForm() {
         placeholder="example@pfi.com"
         type="email"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => {
+          if (error) setError(null);
+          setEmail(e.target.value);
+        }}
         disabled={loading}
         required
       />
@@ -49,7 +47,10 @@ export function LoginForm() {
         label={t("password")}
         value={password}
         forgotPasswordShow={true}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(e) => {
+          if (error) setError(null);
+          setPassword(e.target.value);
+        }}
         disabled={loading}
         required
       />
