@@ -23,7 +23,7 @@ export function RegisterForm() {
 
   useEffect(() => {
     if (success) {
-      router.push("/");
+      router.push("/dashboard");
     }
   }, [success, router]);
 
