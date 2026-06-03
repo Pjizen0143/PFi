@@ -6,10 +6,8 @@ export default createMiddleware({
 });
 
 export const config = {
-  // สลับเอาเงื่อนไขล้างแคช/ยกเว้นโฟลเดอร์ขึ้นมาไว้ตัวแรกสุด
-  // และเติม |api|api/v1 เข้าไปให้ชัดเจน
   matcher: [
-    "/((?!api|_next|.*\\..*).*)", // ย้ายตัวนี้มาอันแรก และสั่ง bypass 'api' ทันที
+    "/((?!api|_next|.*\\..*).*)",
     "/",
     "/(de|en|th)/:path*",
   ],
