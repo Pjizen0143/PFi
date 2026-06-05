@@ -1,4 +1,5 @@
-.PHONY: dev dev-db dev-api dev-web dev-build dev-api-build dev-web-build prod-release-all prod-build-all prod-push-all prod-up prod-update test down clean
+.PHONY: dev dev-db dev-api dev-web dev-build dev-api-build dev-web-build \
+        prod-release-all prod-build-all prod-up prod-update test down clean
 
 ENVIRONMENT ?= local
 
@@ -14,7 +15,7 @@ ifneq ($(wildcard $(ENV_FILE)),)
 endif
 
 # ==============================================================================
-# DEVELOPMENT (Standard Run - Fast, reuses existing images, no image buildup)
+# DEVELOPMENT
 # ==============================================================================
 
 dev:
@@ -30,7 +31,7 @@ dev-web:
 	ENVIRONMENT=local docker compose up web --no-deps
 
 # ==============================================================================
-# DEVELOPMENT BUILD (Use only when changing Dockerfiles or adding new packages)
+# DEVELOPMENT BUILD
 # ==============================================================================
 
 dev-build:
@@ -43,23 +44,27 @@ dev-web-build:
 	ENVIRONMENT=local docker compose up web --build --no-deps
 
 # ==============================================================================
-# PRODUCTION BUILD & PUSH
+# PRODUCTION BUILD & PUSH (Multi-Arch)
 # ==============================================================================
-
-prod-release-all: prod-build-all prod-push-all
 
 prod-build-all:
-	@echo "Building Production Images..."
-	DOCKER_BUILDKIT=1 docker build -t $(DOCKERHUB_USERNAME)/pfi-api:latest ./apps/api
-	DOCKER_BUILDKIT=1 docker build --build-arg BACKEND_API_URL=http://api:8000 -t $(DOCKERHUB_USERNAME)/pfi-web:latest ./apps/web
+	@echo "Building & Pushing Multi-Arch Images..."
 
-prod-push-all:
-	@echo "Pushing Images to Docker Hub..."
-	docker push $(DOCKERHUB_USERNAME)/pfi-api:latest
-	docker push $(DOCKERHUB_USERNAME)/pfi-web:latest
+	docker buildx build \
+		--platform linux/amd64,linux/arm64 \
+		-t $(DOCKERHUB_USERNAME)/pfi-api:latest \
+		--push \
+		./apps/api
+
+	docker buildx build \
+		--platform linux/amd64,linux/arm64 \
+		--build-arg BACKEND_API_URL=http://api:8000 \
+		-t $(DOCKERHUB_USERNAME)/pfi-web:latest \
+		--push \
+		./apps/web
 
 # ==============================================================================
-# PRODUCTION RUN (Pulls latest images from Docker Hub, ensures no local buildup)
+# PRODUCTION RUN
 # ==============================================================================
 
 prod-up:
@@ -68,7 +73,7 @@ prod-up:
 prod-update:
 	ENVIRONMENT=production docker compose pull
 	ENVIRONMENT=production docker compose up -d
-    
+
 # ==============================================================================
 # TESTING & CLEANUP
 # ==============================================================================
