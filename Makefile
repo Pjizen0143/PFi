@@ -44,20 +44,20 @@ dev-web-build:
 	ENVIRONMENT=local docker compose up web --build --no-deps
 
 # ==============================================================================
-# PRODUCTION BUILD & PUSH (Multi-Arch)
+# PRODUCTION BUILD & PUSH
 # ==============================================================================
 
 prod-build-all:
-	@echo "Building & Pushing Multi-Arch Images..."
+	@echo "Building & Pushing Images..."
 
 	docker buildx build \
-		--platform linux/amd64,linux/arm64 \
+		--platform linux/arm64 \
 		-t $(DOCKERHUB_USERNAME)/pfi-api:latest \
 		--push \
 		./apps/api
 
 	docker buildx build \
-		--platform linux/amd64,linux/arm64 \
+		--platform linux/arm64 \
 		--build-arg BACKEND_API_URL=http://api:8000 \
 		-t $(DOCKERHUB_USERNAME)/pfi-web:latest \
 		--push \
