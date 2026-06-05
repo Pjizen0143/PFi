@@ -2,6 +2,8 @@
 
 Personal Finance Tracker application built with FastAPI backend and Next.js frontend.
 
+**Live Demo:** https://pfi-demo.duckdns.org
+
 ---
 
 ## Preview
