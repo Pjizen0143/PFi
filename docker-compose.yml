@@ -1,19 +1,19 @@
 name: pfi
 
 x-common-environment: &common-environment
-  ENVIRONMENT: ${ENVIRONMENT:-local}
+  ENVIRONMENT: ${ENVIRONMENT:-production}
 
 x-postgres-env-file: &postgres-env-file
-  - infra/postgres/.env.${ENVIRONMENT:-local}
+  - infra/postgres/.env.${ENVIRONMENT:-production}
 
 x-redis-env-file: &redis-env-file
-  - infra/redis/.env.${ENVIRONMENT:-local}
+  - infra/redis/.env.${ENVIRONMENT:-production}
 
 x-api-env-files: &api-env-files
-  - apps/api/.env.${ENVIRONMENT:-local}
+  - apps/api/.env.${ENVIRONMENT:-production}
 
 x-web-env-files: &web-env-files
-  - apps/web/.env.${ENVIRONMENT:-local}
+  - apps/web/.env.${ENVIRONMENT:-production}
 
 services:
   db:
@@ -25,11 +25,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\"",
-        ]
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -59,13 +55,7 @@ services:
       - backend
 
   api:
-    build:
-      context: ./apps/api
-      dockerfile: Dockerfile
-    image: pfi-api:latest
-    volumes:
-      - ./apps/api:/app
-      - /app/node_modules
+    image: ${DOCKERHUB_USERNAME}/pfi-api:latest
     restart: unless-stopped
     depends_on:
       db:
@@ -80,13 +70,7 @@ services:
     expose:
       - "8000"
     healthcheck:
-      test:
-        [
-          "CMD",
-          "python",
-          "-c",
-          "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health').status == 200 else 1)",
-        ]
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health').status == 200 else 1)"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -99,17 +83,7 @@ services:
       - backend
 
   web:
-    build:
-      context: ./apps/web
-      dockerfile: Dockerfile
-      target: runner
-      args:
-        - BACKEND_API_URL=http://api:8000
-    image: pfi-web:latest
-    volumes:
-      - ./apps/web:/app
-      - /app/node_modules
-      - /app/.next
+    image: ${DOCKERHUB_USERNAME}/pfi-web:latest
     restart: unless-stopped
     depends_on:
       api:
@@ -119,15 +93,9 @@ services:
       <<: *common-environment
       PORT: "3000"
     ports:
-      - "127.0.0.1:3000:3000"
+      - "3000:3000" 
     healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
-        ]
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 5s
       retries: 5
