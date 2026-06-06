@@ -7,6 +7,7 @@ from app.core.utils import utcnow
 if TYPE_CHECKING:
     from app.models.user import User
     from app.models.currency import Currency
+    from app.models.transaction import Transaction
 
 class Wallet(SQLModel, table=True):
     __tablename__ = "wallets"
@@ -20,3 +21,7 @@ class Wallet(SQLModel, table=True):
 
     user: "User" = Relationship(back_populates="wallets")
     currency: "Currency" = Relationship(back_populates="wallets")
+    transactions: list["Transaction"] = Relationship(
+        back_populates="wallet",
+        cascade_delete=True
+    )
