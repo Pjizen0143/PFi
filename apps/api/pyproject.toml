@@ -8,6 +8,7 @@ dependencies = [
     "bcrypt>=5.0.0",
     "fakeredis>=2.36.0",
     "fastapi[standard]>=0.136.1",
+    "google-auth>=2.53.0",
     "httpx>=0.28.1",
     "psycopg[binary]>=3.3.4",
     "pyjwt>=2.12.1",
