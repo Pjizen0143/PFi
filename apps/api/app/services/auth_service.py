@@ -22,7 +22,7 @@ from app.exceptions.user_exception import (
     UserNotFoundException,
     EmailAlreadyExistsException,
 )
-from apps.api.app.core.google import verify_google_token
+from app.core.google import verify_google_token
 from app.core.config import settings
 
 
