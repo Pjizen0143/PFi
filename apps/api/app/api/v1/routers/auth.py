@@ -7,7 +7,7 @@ from app.exceptions import (
 )
 from app.api.deps import get_uow
 from app.schemas.common.response import ApiResponse, ApiSuccessResponse
-from app.schemas.v1.auth import LoginRequest, RegisterRequest, AuthResponse
+from app.schemas.v1.auth import GoogleAuthRequest, LoginRequest, RegisterRequest, AuthResponse
 from app.services.auth_service import (
     AuthService,
 )
@@ -60,3 +60,18 @@ def login(
     service = AuthService(uow)
 
     return ApiResponse.success_response(data=service.login(request))
+
+
+@router.post(
+    "/google",
+    response_model_exclude_none=True,
+    response_model=ApiSuccessResponse[AuthResponse],
+)
+def google_auth(
+    request: GoogleAuthRequest,
+    uow: UnitOfWork = Depends(get_uow),
+) -> ApiSuccessResponse[AuthResponse]:
+
+    service = AuthService(uow)
+
+    return ApiResponse.success_response(data=service.login_with_google(request))
