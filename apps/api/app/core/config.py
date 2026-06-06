@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     REDIS_PORT: int
 
     EXCHANGE_RATE_API_URL: str = "localhost"
+    GOOGLE_CLIENT_ID: str
 
 
 @lru_cache

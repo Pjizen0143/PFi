@@ -12,6 +12,7 @@ from app.schemas.v1.auth import (
     AuthResponse,
     LoginRequest,
     RegisterRequest,
+    GoogleAuthRequest,
 )
 from app.unit_of_work.unit_of_work import (
     UnitOfWork,
@@ -21,6 +22,8 @@ from app.exceptions.user_exception import (
     UserNotFoundException,
     EmailAlreadyExistsException,
 )
+from apps.api.app.core.google import verify_google_token
+from app.core.config import settings
 
 
 class AuthService:
@@ -92,6 +95,63 @@ class AuthService:
 
         if not user:
             raise UserNotFoundException()
+
+        access_token = create_access_token(
+            str(user.id),
+        )
+
+        return AuthResponse(
+            access_token=access_token,
+            user_id=str(user.id),
+            email=user.email,
+            display_name=user.display_name,
+        )
+    
+    def login_with_google(
+        self,
+        request: GoogleAuthRequest,
+    ) -> AuthResponse:
+
+        google_user = verify_google_token(
+            request.id_token,
+            settings.GOOGLE_CLIENT_ID,
+        )
+
+        auth_provider = self.uow.auth.get_by_provider(
+            provider="google",
+            provider_user_id=google_user["sub"],
+        )
+
+        if auth_provider:
+            user = auth_provider.user
+
+        else:
+            user = self.uow.users.get_by_email(
+                google_user["email"],
+            )
+
+            if not user:
+                user = User(
+                    display_name=google_user.get(
+                        "name",
+                        "Google User",
+                    ),
+                    email=google_user["email"],
+                )
+
+                self.uow.users.add(user)
+                self.uow.commit()
+                self.uow.refresh(user)
+
+            auth_provider = AuthProvider(
+                user=user,
+                provider="google",
+                provider_user_id=google_user["sub"],
+                email=google_user["email"],
+            )
+
+            self.uow.auth.add(auth_provider)
+            self.uow.commit()
 
         access_token = create_access_token(
             str(user.id),
