@@ -4,6 +4,8 @@ from app.repositories.user_repository import UserRepository
 from app.repositories.auth_repository import AuthRepository
 from app.repositories.currency_repository import CurrencyRepository
 from app.repositories.wallet_repository import WalletRepository
+from app.repositories.category_repository import CategoryRepository
+from app.repositories.transaction_repository import TransactionRepository
 
 
 class UnitOfWork:
@@ -13,6 +15,8 @@ class UnitOfWork:
         self.auth = AuthRepository(session)
         self.currencies = CurrencyRepository(session)
         self.wallets = WalletRepository(session)
+        self.categories = CategoryRepository(session)
+        self.transactions = TransactionRepository(session)
 
     def commit(self) -> None:
         self.session.commit()
