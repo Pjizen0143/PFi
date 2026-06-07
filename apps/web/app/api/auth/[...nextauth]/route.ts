@@ -36,8 +36,7 @@ export const authOptions: NextAuthOptions = {
             name: display_name,
             accessToken: access_token,
           };
-        } catch (error: any) {
-          console.error("❌ Error during login:", error?.response?.data ?? error?.message);
+        } catch{
           return null;
         }
       },
@@ -62,8 +61,7 @@ export const authOptions: NextAuthOptions = {
           const { access_token, display_name } = res.data.data;
           token.accessToken = access_token;
           token.displayName = display_name;
-        } catch (error: any) {
-          console.error("❌ Error during Google login:", error?.response?.data ?? error?.message);
+        } catch {
           token.error = "GoogleAuthError";
         }
       }
