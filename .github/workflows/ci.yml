@@ -1,11 +1,9 @@
 name: CI
-
 on:
   push:
     branches:
       - main
       - develop
-
   pull_request:
 
 concurrency:
@@ -19,7 +17,6 @@ jobs:
   api:
     name: API Tests
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,11 +28,9 @@ jobs:
   web:
     name: Web Lint & Build
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: apps/web
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -49,17 +44,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: pnpm
-          cache-dependency-path: apps/web/pnpm-lock.yaml
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "store=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.store }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('apps/web/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile 
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: pnpm  run lint
+        run: pnpm run lint
 
       - name: Build
-
         env:
           BACKEND_API_URL: http://api:8000
         run: pnpm run build
