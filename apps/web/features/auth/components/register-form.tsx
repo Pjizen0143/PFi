@@ -5,12 +5,10 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { FormErrorHandler } from "@/lib/utils/error-handler";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRegister } from "../hooks/use-register";
 
 export function RegisterForm() {
-  const router = useRouter();
   const t = useTranslations("signup");
 
   const [name, setName] = useState("");
@@ -19,13 +17,7 @@ export function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
 
-  const { loading, error, success, validationErrors, handleRegister } = useRegister();
-
-  useEffect(() => {
-    if (success) {
-      router.push("/dashboard");
-    }
-  }, [success, router]);
+  const { loading, error, validationErrors, handleRegister } = useRegister();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, useCallback } from "react";
 import { getWallets, createWallet, deleteWallet, updateWallet } from "../services/wallet-service";
 import type { Wallet, CreateWalletPayload, UpdateWalletPayload } from "../types/wallets";
@@ -15,9 +14,7 @@ export function useWallets() {
       setLoading(true);
       setError(null);
       const res = await getWallets();
-      if (res && res.data) {
-        setWallets(res.data);
-      }
+      if (res?.data) setWallets(res.data);
     } catch (err) {
       setError(FormErrorHandler.getErrorMessage(err, "Failed to load wallets"));
     } finally {
@@ -34,10 +31,9 @@ export function useWallets() {
       setLoading(true);
       setError(null);
       const res = await createWallet(payload);
-      
-      if (res && res.data) {
-        const newWallet: Wallet = res.data;
-        setWallets((prev) => [...prev, newWallet]);
+      if (res?.data) {
+        const created: Wallet = res.data;
+        setWallets((prev) => [...prev, created]);
         return true;
       }
       return false;
@@ -69,10 +65,9 @@ export function useWallets() {
       setLoading(true);
       setError(null);
       const res = await updateWallet(id, payload);
-      
-      if (res && res.data) {
-        const updatedWallet: Wallet = res.data;
-        setWallets((prev) => prev.map((w) => (w.id === id ? updatedWallet : w)));
+      if (res?.data) {
+        const updated: Wallet = res.data;
+        setWallets((prev) => prev.map((w) => (w.id === id ? updated : w)));
         return true;
       }
       return false;
