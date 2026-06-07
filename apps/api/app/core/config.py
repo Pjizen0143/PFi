@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     EXCHANGE_RATE_API_URL: str = "localhost"
     GOOGLE_CLIENT_ID: str
 
+    ORIGINS: str = ""
+
 
 @lru_cache
 def get_settings() -> Settings:
