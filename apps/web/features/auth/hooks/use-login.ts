@@ -1,71 +1,39 @@
+// features/auth/hooks/useLogin.ts
 "use client";
-
-import type { ValidationError } from "@/lib/types";
-import { FormErrorHandler } from "@/lib/utils/error-handler";
 import { useState } from "react";
-import { login } from "../services/auth-service";
+import { signIn } from "next-auth/react";
+import { useLocale } from "next-intl";
 
 export function useLogin() {
+  const locale = useLocale();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<ValidationError[] | null>(null);
-  const [success, setSuccess] = useState(false);
 
   async function handleLogin(email: string, password: string) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    try {
-      setLoading(true);
-      setError(null);
-      setValidationErrors(null);
-      setSuccess(false);
+    if (!email.trim()) return setError("Please enter your email");
+    if (!emailRegex.test(email)) return setError("Invalid email format");
+    if (!password) return setError("Please enter your password");
 
-      // --- [Client-side Validation] ---
-      if (!email.trim()) {
-        setError("Please enter your email");
-        return;
-      }
+    setLoading(true);
+    setError(null);
 
-      if (!emailRegex.test(email)) {
-        setError("Invalid email format");
-        return;
-      }
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
 
-      if (!password) {
-        setError("Please enter your password");
-        return;
-      }
+    setLoading(false);
 
-      const res = await login({ email, password });
-
-      // --- [Server-side Success] ---
-      if (res.data) {
-        const token = res.data.access_token;
-        const displayName = res.data.display_name;
-        
-        localStorage.setItem("access_token", token);
-        localStorage.setItem("display_name", displayName);
-
-        setSuccess(true);
-        console.log("Login success, welcome:", displayName);
-      } else {
-        setError("Login failed: Unexpected response from server");
-      }
-    } catch (err) {
-      // --- [Server-side Error Handling using Utility] ---
-      setError(FormErrorHandler.getErrorMessage(err, "Login failed"));
-      setValidationErrors(FormErrorHandler.getValidationErrors(err));
-    } finally {
-      setLoading(false);
+    if (res?.error) {
+      setError("Invalid email or password");
+      return;
     }
+
+    window.location.href = `/${locale}/dashboard`;
   }
 
-  return {
-    loading,
-    error,
-    validationErrors,
-    success,
-    handleLogin,
-    setError,
-  };
+  return { loading, error, handleLogin, setError };
 }
