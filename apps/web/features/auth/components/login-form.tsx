@@ -4,24 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLogin } from "../hooks/use-login";
 
 export function LoginForm() {
   const t = useTranslations("signin");
-  const router = useRouter();
 
-  const { handleLogin, loading, error, success, setError } = useLogin();
+  const { handleLogin, loading, error, setError } = useLogin();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  useEffect(() => {
-    if (success) {
-      router.push("/dashboard");
-    }
-  }, [success, router]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
