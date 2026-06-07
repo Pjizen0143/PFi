@@ -10,7 +10,7 @@ RUN corepack enable && corepack prepare pnpm@9 --activate
 
 FROM base AS deps
 
-COPY package.json pnpm-lock.yaml ./
+COPY .npmrc package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
@@ -22,7 +22,15 @@ ARG BACKEND_API_URL
 ENV BACKEND_API_URL=$BACKEND_API_URL
 
 RUN pnpm run build
-RUN pnpm prune --prod
+
+FROM base AS dev
+
+COPY .npmrc package.json pnpm-lock.yaml ./
+
+RUN pnpm install --frozen-lockfile
+
+EXPOSE 3000
+CMD ["pnpm", "dev"]
 
 FROM base AS runner
 
