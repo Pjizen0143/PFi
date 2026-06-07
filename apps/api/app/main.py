@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware  # นำมา import ไว้ด้านบนให้เคลียร์
+from fastapi.middleware.cors import CORSMiddleware
 
 from app import models
 from app.api.health import router as health_router
