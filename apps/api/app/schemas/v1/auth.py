@@ -22,3 +22,7 @@ class AuthResponse(BaseModel):
     expires_in: int = EXPIRE_TIME
 
     display_name: str
+
+
+class GoogleAuthRequest(BaseModel):
+    id_token: str
