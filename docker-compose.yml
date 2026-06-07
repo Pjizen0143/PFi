@@ -55,7 +55,7 @@ services:
       - backend
 
   api:
-    image: ${DOCKERHUB_USERNAME}/pfi-api:latest
+    image: ${DOCKERHUB_USERNAME}/pfi-api:${VERSION:-latest}
     restart: unless-stopped
     depends_on:
       db:
@@ -83,7 +83,7 @@ services:
       - backend
 
   web:
-    image: ${DOCKERHUB_USERNAME}/pfi-web:latest
+    image: ${DOCKERHUB_USERNAME}/pfi-web:${VERSION:-latest}
     restart: unless-stopped
     depends_on:
       api:
