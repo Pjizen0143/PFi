@@ -5,7 +5,7 @@ export type LoginPayload = {
   password: string;
 };
 
-export type LoginResult = {
+export type AuthResult = {
   access_token: string;
   token_type: string;
   expires_in: number;
@@ -18,12 +18,3 @@ export type RegisterPayload = {
   display_name: string;
 };
 
-export type RegisterResult = {
-  access_token: string;
-  token_type: string;
-  expires_in: number;
-  display_name: string;
-};
-
-export type LoginResponse = ApiResponse<LoginResult>;
-export type RegisterResponse = ApiResponse<RegisterResult>;

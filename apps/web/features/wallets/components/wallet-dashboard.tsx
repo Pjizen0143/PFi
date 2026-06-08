@@ -3,7 +3,6 @@
 import { useWallets } from "../hooks/use-wallets";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Navbar } from "@/components/shared/navbar";
 import { CreateWalletModal } from "./create-wallet-modal";
 
 export function WalletDashboard() {
