@@ -1,26 +1,22 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { ProfileIcon } from "./profile-icon";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { useTranslations } from "next-intl";
+import { Logo } from "./logo";
 
 export function Navbar() {
   const t = useTranslations("navbar");
+  const { status } = useSession();
 
   return (
     <header className="border-foreground/10 bg-background/80 sticky top-0 z-50 border-b backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         {/* LEFT */}
-        <Link href="/" className="flex items-center gap-3">
-          <div className="bg-primary text-background flex h-10 w-10 items-center justify-center rounded-2xl text-lg font-bold shadow-md">
-            P
-          </div>
-
-          <div>
-            <p className="text-lg font-bold">PFi</p>
-            <p className="text-foreground/50 text-xs">Personal Finance</p>
-          </div>
-        </Link>
+        <Logo />
 
         {/* CENTER */}
         <nav className="hidden items-center gap-8 md:flex">
@@ -41,14 +37,19 @@ export function Navbar() {
 
           <ThemeToggle />
 
-          <Link
-            href="/signin"
-            className="bg-primary text-background hidden rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-90 md:inline-block"
-          >
-            {t("signin")}
-          </Link>
+          {status === "authenticated" ? (
+            <ProfileIcon />
+          ) : (
+            <Link
+              href="/signin"
+              className="bg-primary text-background hidden rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-90 md:inline-block"
+            >
+              {t("signin")}
+            </Link>
+          )}
         </div>
       </div>
     </header>
   );
 }
+
