@@ -9,6 +9,8 @@
   --color-primary: rgb(var(--primary));
   
   --color-brand-green: rgb(var(--brand-green)); 
+
+  --color-danger: rgb(var(--danger));
 }
 
 @layer base {
@@ -20,6 +22,8 @@
     --primary: 3 22 56;          /* #031638 */
 
     --brand-green: 0 212 127;    /* #00D47F */
+    
+    --danger: 255 0 0;             /* #FF0000 */
   }
 
   .dark, [data-theme=dark] {
@@ -30,6 +34,8 @@
     --primary: 0 255 157;        /* #00FF9D */
 
     --brand-green: 0 255 157;    /* #00FF9D */
+
+    --danger: 255 0 0;             /* #FF0000 */
   }
 
   body {

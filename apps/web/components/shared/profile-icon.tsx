@@ -1,11 +1,11 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { User, Settings, ChevronDown } from "lucide-react";
+import { User, Settings, ChevronDown, LogOut } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { SignOutBtn } from "@/features/auth/components/sign-out-btn";
 
 interface ProfileIconProps {
   imageUrl?: string | null;
@@ -140,7 +140,7 @@ export function ProfileIcon({ imageUrl, name, className, onClick }: ProfileIconP
               <Link
                 href="/settings"
                 onClick={() => setIsOpen(false)}
-                className="text-foreground/80 hover:bg-foreground/5 hover:text-foreground flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition duration-200"
+                className="text-foreground/80 hover:bg-foreground/5 hover:text-foreground flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition duration-200 hover:cursor-pointer"
               >
                 <Settings size={18} />
                 <span>Settings</span>
@@ -148,10 +148,14 @@ export function ProfileIcon({ imageUrl, name, className, onClick }: ProfileIconP
 
               {/* Sign Out Button */}
               <div
-                onClick={() => setIsOpen(false)}
-                className="mt-1 [&_button]:rounded-xl [&_button]:py-2.5 [&_button]:text-sm [&_button]:font-semibold"
+                onClick={() => {
+                  signOut({ callbackUrl: "/" });
+                  setIsOpen(false);
+                }}
+                className="text-danger/80 hover:bg-foreground/5 hover:text-danger flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition duration-200 hover:cursor-pointer"
               >
-                <SignOutBtn />
+                <LogOut size={18} />
+                <span>Sign Out</span>
               </div>
             </div>
           </div>,
