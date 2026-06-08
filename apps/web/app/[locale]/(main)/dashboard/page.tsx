@@ -4,7 +4,6 @@ import { SignOutBtn } from "@/features/auth/components/sign-out-btn";
 export default function DashboardPage() {
   return (
     <>
-      <SignOutBtn />
       <WalletDashboard />;
     </>
   );
