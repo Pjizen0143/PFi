@@ -3,7 +3,6 @@
 import { useWallets } from "../hooks/use-wallets";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Navbar } from "@/components/shared/navbar";
 import { CreateWalletModal } from "./create-wallet-modal";
 
 export function WalletDashboard() {
@@ -12,7 +11,7 @@ export function WalletDashboard() {
 
   return (
     <main className="bg-background text-foreground min-h-screen">
-      <Navbar />
+      {" "}
       <div className="mx-auto max-w-4xl p-6">
         <h1 className="mb-6 text-3xl font-bold">Your Wallets</h1>
 
@@ -73,7 +72,6 @@ export function WalletDashboard() {
           </div>
         )}
       </div>
-
       <CreateWalletModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -2,6 +2,7 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { login } from '@/features/auth/services/auth-service';
 import { serverApi } from '@/lib/axios';
 
 export const authOptions: NextAuthOptions = {
@@ -23,17 +24,14 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
-          const response = await serverApi.post('/api/v1/auth/login', {
-            email: credentials.email,
-            password: credentials.password,
-          });
-
-          const { access_token, display_name } = response.data.data;
+          const res = await login({ email: credentials.email, password: credentials.password });
+          const { access_token, display_name, expires_in } = res;
 
           return {
             id: credentials.email,
             email: credentials.email,
-            name: display_name,
+            displayName: display_name,
+            expiresIn: expires_in,
             accessToken: access_token,
           };
         } catch{
@@ -46,9 +44,12 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       // Credentials login
+      const nowInSeconds = Math.floor(Date.now() / 1000);
       if (user?.accessToken) {
         token.accessToken = user.accessToken;
+        token.accessTokenExpiresAt = user.expiresIn! + nowInSeconds;
         token.displayName = user.name;
+
       }
 
       // Google login
@@ -58,12 +59,20 @@ export const authOptions: NextAuthOptions = {
             id_token: account.id_token,
           });
 
-          const { access_token, display_name } = res.data.data;
+          const { access_token, display_name } = res.data;
           token.accessToken = access_token;
           token.displayName = display_name;
+          token.accessTokenExpiresAt = user.expiresIn! + nowInSeconds
         } catch {
           token.error = "GoogleAuthError";
         }
+      }
+
+      if (token.accessTokenExpiresAt && nowInSeconds > (token.accessTokenExpiresAt as number)) {
+        return {
+          ...token,
+          error: "AccessTokenExpired",
+        };
       }
 
       return token;
