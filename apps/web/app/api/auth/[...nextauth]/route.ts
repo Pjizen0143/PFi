@@ -59,10 +59,10 @@ export const authOptions: NextAuthOptions = {
             id_token: account.id_token,
           });
 
-          const { access_token, display_name } = res.data;
+          const { access_token, display_name, expires_in} = res.data;
           token.accessToken = access_token;
           token.displayName = display_name;
-          token.accessTokenExpiresAt = user.expiresIn! + nowInSeconds
+          token.accessTokenExpiresAt = nowInSeconds + (expires_in || 3600);
         } catch {
           token.error = "GoogleAuthError";
         }
@@ -81,6 +81,8 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
       session.displayName = token.displayName as string;
+      session.error = token.error as string | undefined;;
+      
       return session;
     },
   },
