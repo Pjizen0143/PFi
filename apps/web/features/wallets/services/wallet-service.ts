@@ -2,27 +2,26 @@ import { api } from "@/lib/axios";
 import type { 
   CreateWalletPayload, 
   UpdateWalletPayload, 
-  WalletResponse, 
-  WalletListResponse 
+  Wallet
 } from "../types/wallets";
 
-export async function getWallets(): Promise<WalletListResponse> {
-  const response = await api.get<WalletListResponse>("/api/v1/wallets");
+export async function getWallets(): Promise<Wallet[]> {
+  const response = await api.get<Wallet[]>("/api/v1/wallets");
   return response.data;
 }
 
-export async function getWallet(id: string): Promise<WalletResponse> {
-  const response = await api.get<WalletResponse>(`/api/v1/wallets/${id}`);
+export async function getWallet(id: string): Promise<Wallet> {
+  const response = await api.get<Wallet>(`/api/v1/wallets/${id}`);
   return response.data;
 }
     
-export async function createWallet(payload: CreateWalletPayload): Promise<WalletResponse> {
-  const response = await api.post<WalletResponse>("/api/v1/wallets", payload);
+export async function createWallet(payload: CreateWalletPayload): Promise<Wallet> {
+  const response = await api.post<Wallet>("/api/v1/wallets", payload);
   return response.data;
 }
 
-export async function updateWallet(id: string, payload: UpdateWalletPayload): Promise<WalletResponse> {
-  const response = await api.patch<WalletResponse>(`/api/v1/wallets/${id}`, payload);
+export async function updateWallet(id: string, payload: UpdateWalletPayload): Promise<Wallet> {
+  const response = await api.patch<Wallet>(`/api/v1/wallets/${id}`, payload);
   return response.data;
 }
 

@@ -1,4 +1,3 @@
-import { ApiResponse } from "@/lib/types";
 
 export type Wallet = {
   id: string;
@@ -17,6 +16,3 @@ export type CreateWalletPayload = {
 export type UpdateWalletPayload = {
   name: string;
 };
-
-export type WalletResponse = ApiResponse<Wallet>;
-export type WalletListResponse = ApiResponse<Wallet[]>;

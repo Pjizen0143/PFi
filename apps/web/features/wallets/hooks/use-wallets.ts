@@ -14,7 +14,7 @@ export function useWallets() {
       setLoading(true);
       setError(null);
       const res = await getWallets();
-      if (res?.data) setWallets(res.data);
+      if (res) setWallets(res);
     } catch (err) {
       setError(FormErrorHandler.getErrorMessage(err, "Failed to load wallets"));
     } finally {
@@ -31,8 +31,8 @@ export function useWallets() {
       setLoading(true);
       setError(null);
       const res = await createWallet(payload);
-      if (res?.data) {
-        const created: Wallet = res.data;
+      if (res) {
+        const created: Wallet = res;
         setWallets((prev) => [...prev, created]);
         return true;
       }
@@ -65,8 +65,8 @@ export function useWallets() {
       setLoading(true);
       setError(null);
       const res = await updateWallet(id, payload);
-      if (res?.data) {
-        const updated: Wallet = res.data;
+      if (res) {
+        const updated: Wallet = res;
         setWallets((prev) => prev.map((w) => (w.id === id ? updated : w)));
         return true;
       }
