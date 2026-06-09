@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useSession, signOut } from "next-auth/react";
@@ -72,7 +73,6 @@ export function Sidebar({ className = "", mobileOpen = false, desktopOpen = true
                 <Link
                   key={item.href}
                   href={item.href}
-                  // 💡 สั่งปิดเฉพาะเวลาใช้งานบน mobileOpen เท่านั้น
                   onClick={() => {
                     if (mobileOpen && onCloseMobile) {
                       onCloseMobile();
@@ -108,7 +108,7 @@ export function Sidebar({ className = "", mobileOpen = false, desktopOpen = true
           <div className="flex items-center gap-3">
             <div className="bg-foreground/5 border-foreground/10 relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border">
               {resolvedImageUrl ? (
-                <img
+                <Image
                   src={resolvedImageUrl}
                   alt={resolvedName || "Profile"}
                   className="aspect-square h-full w-full object-cover"

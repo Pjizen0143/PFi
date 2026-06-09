@@ -21,9 +21,11 @@ export const authOptions: NextAuthOptions = {
         password: { type: 'password' },
       },
       async authorize(credentials) {
+        console.log(credentials);
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
+          console.log("Local Login")
           const res = await login({ email: credentials.email, password: credentials.password });
           const { access_token, display_name, expires_in } = res;
 
@@ -34,8 +36,8 @@ export const authOptions: NextAuthOptions = {
             expiresIn: expires_in,
             accessToken: access_token,
           };
-        } catch{
-          return null;
+        } catch {
+            return null; 
         }
       },
     }),
@@ -48,7 +50,7 @@ export const authOptions: NextAuthOptions = {
       if (user?.accessToken) {
         token.accessToken = user.accessToken;
         token.accessTokenExpiresAt = user.expiresIn! + nowInSeconds;
-        token.displayName = user.name;
+        token.displayName = user.displayName;
 
       }
 
