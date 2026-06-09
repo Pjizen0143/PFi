@@ -36,8 +36,8 @@ export const authOptions: NextAuthOptions = {
             expiresIn: expires_in,
             accessToken: access_token,
           };
-        } catch(error: any) {
-    return null; //
+        } catch {
+            return null; 
         }
       },
     }),
