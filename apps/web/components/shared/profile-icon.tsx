@@ -123,7 +123,7 @@ export function ProfileIcon({ imageUrl, name, className, onClick }: ProfileIconP
         createPortal(
           <div
             ref={dropdownRef}
-            className="border-foreground/10 bg-card animate-in fade-in slide-in-from-top-2 fixed z-9999 w-64 rounded-2xl border p-4 shadow-xl ring-1 ring-black/5 duration-200"
+            className="border-foreground/10 bg-card fixed z-9999 w-64 rounded-2xl border p-4 shadow-xl ring-1 ring-black/5"
             style={{
               top: `${coords.top}px`,
               right: `${coords.right}px`,

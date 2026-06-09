@@ -1,36 +1,46 @@
 "use client";
 
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { ProfileIcon } from "./profile-icon";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { useTranslations } from "next-intl";
 import { Logo } from "./logo";
+import { Menu } from "lucide-react";
 
-export function MainNavbar() {
+interface MainNavbarProps {
+  onMenuClick: () => void;
+}
+
+export function MainNavbar({ onMenuClick }: MainNavbarProps) {
   const t = useTranslations("navbar");
   const { status } = useSession();
 
   return (
-    <header className="border-foreground/10 bg-background/80 sticky top-0 z-50 border-b backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        {/* LEFT */}
-        <Logo />
+    <header className="border-foreground/10 bg-background/80 fixed inset-x-0 top-0 z-40 border-b backdrop-blur-xl">
+      <div className="flex h-16 items-center justify-between px-6">
+        {/* Left: Menu & Logo */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onMenuClick}
+            className="text-foreground/70 hover:bg-foreground/5 hover:text-foreground rounded-lg p-2 transition-colors hover:cursor-pointer"
+            aria-label="Toggle menu"
+          >
+            <Menu size={20} />
+          </button>
+          <Logo />
+        </div>
 
-        {/* CENTER */}
+        {/* Center: Navigation (empty, ready for future) */}
         <nav className="hidden items-center gap-8 md:flex"></nav>
 
-        {/* RIGHT */}
+        {/* Right: Actions */}
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
-
           <ThemeToggle />
-
           {status === "authenticated" && <ProfileIcon />}
         </div>
       </div>
     </header>
   );
 }
-
