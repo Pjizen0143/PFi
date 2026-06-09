@@ -111,6 +111,8 @@ export function Sidebar({ className = "", mobileOpen = false, desktopOpen = true
                 <Image
                   src={resolvedImageUrl}
                   alt={resolvedName || "Profile"}
+                  width={40}
+                  height={40}
                   className="aspect-square h-full w-full object-cover"
                   referrerPolicy="no-referrer"
                 />
