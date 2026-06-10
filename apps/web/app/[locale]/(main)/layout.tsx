@@ -36,7 +36,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <Sidebar mobileOpen={sidebarOpen} desktopOpen={sidebarOpen} onCloseMobile={closeSidebarMobile} />
 
         <div className={`flex flex-1 flex-col ${sidebarOpen ? "md:ml-64" : ""}`}>
-          <main className="flex-1 p-6 pt-6 md:p-8 md:pt-8">{children}</main>
+          <main className="@container flex-1 p-6 pt-6 md:p-8 md:pt-8">{children}</main>
         </div>
       </div>
     </div>
