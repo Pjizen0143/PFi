@@ -5,27 +5,23 @@ import { mock_dashboard } from "@/features/dashboard/mock-data";
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="w-full space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Dashboard
-        </h1>
-        <p className="text-sm text-foreground/50 mt-1">
-          Welcome back! Here is a summary of your financial status.
-        </p>
+        <h1 className="text-primary text-2xl font-bold tracking-tight">Welcome back!</h1>
+        <p className="text-foreground/50 mt-1 text-sm">Here is a summary of your financial status.</p>
       </div>
 
       {/* Grid Layout */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left Column: Total Asset & Wallets list */}
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 gap-6 @5xl:grid-cols-3">
+        {/* Left Column */}
+        <div className="space-y-6 @5xl:col-span-2">
           <TotalAssetValue data={mock_dashboard.total_asset_value} />
           <Wallets wallets={mock_dashboard.wallets} />
         </div>
 
-        {/* Right Column: Recent Transactions list */}
-        <div className="lg:col-span-1">
+        {/* Right Column */}
+        <div className="@5xl:col-span-1">
           <RecentlyTransactions transactions={mock_dashboard.recent_transactions} />
         </div>
       </div>
